@@ -7,21 +7,23 @@ Created by: M@ McCray - mattmccray.com
 Ported to 'mental' by: Sean Cribbs - seancribbs.com
   Version: 0.1
   Contact: seancribbs@gmail.com
+  
+Seriously restructured by: Nathaniel Talbott - terralien.com
+  Version: 0.2
+  Contact: nathaniel@terralien.com
 
 The Mailer extension enables form mail on a page. You can define email
 templates using pages parts (email, and/or email_html). You configure
-the recipients and other Mailer settings in a config part. Following
-is an example of a properly formed config part that defines a 'contact'
-mailer:
+the recipients and other Mailer settings in a "mailer" part. Following
+is an example of a properly formed "mailer" part that defines a
+'contact' mailer:
 
-mailers:
-  contact:
-    subject: From the website of Whatever
-    from: noreply@mydomain.com
-    redirect_to: /contact/thank-you
-    recipients:
-      - one@one.com
-      - two@two.com
+subject: From the website of Whatever
+from: noreply@mydomain.com
+redirect_to: /contact/thank-you
+recipients:
+  - one@one.com
+  - two@two.com
 
 The following tags are available to help you build the form:
     <r:mailer:form name=""> ... </r:mailer:form> 
@@ -34,19 +36,17 @@ The following tags are available to help you build the form:
     <r:mailer:select name=""> ... </r:mailer:select>
     <r:mailer:textarea name=""> ... </r:mailer:textarea>
     <r:mailer:option name="" />
-    <r:mailer:submit />
-    <r:mailer:reset />
     <r:mailer:get name="" />
 
 Simple example of a form:
 
-<r:mailer:form name="contact">
+<r:mailer:form>
  <r:mailer:hidden name="subject" value="Email from my Radiant site!" /> <br/>
   Name:<br/>
  <r:mailer:text name="name" /> <br/>
   Message:<br/>
  <r:mailer:textarea name="message" /> <br/>
- <r:mailer:submit value="Send" />
+ <input type="submit" value="Send" />
 </r:mailer:form>
 
 
