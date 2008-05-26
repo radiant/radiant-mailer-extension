@@ -5,14 +5,16 @@ class MailController < ApplicationController
 
   def create
     page = Page.find(params[:page_id])
+    page.request, page.response = request, response
+
     config = config(page)
-    # If there are recipients defined, send email...
+
     mail = Mail.new(page, config, params[:mailer])
     page.last_mail = mail
+
     if mail.send
       redirect_to (config[:redirect_to] || "#{page.url}#mail_sent")
     else
-      page.request, page.response = request, response
       render :text => page.render
     end
   end

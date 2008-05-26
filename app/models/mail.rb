@@ -51,7 +51,7 @@ The following information was posted:
     Mailer.deliver_generic_mail(
       :recipients => recipients,
       :from => from,
-      :subject => data[:subject] || config[:subject] || "Form Mail from #{request.host}",
+      :subject => data[:subject] || config[:subject] || "Form Mail from #{page.request.host}",
       :plain_body => plain_body,
       :html_body => html_body,
       :cc => data[config[:cc_field]] || config[:cc] || "",
