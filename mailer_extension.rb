@@ -8,7 +8,10 @@ class MailerExtension < Radiant::Extension
   end
 
   def activate
-    Page.send :include, MailerTags
+    Page.class_eval do
+      include MailerTags
+      attr_accessor :last_mail
+    end
   end
   
   def deactivate

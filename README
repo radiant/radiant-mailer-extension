@@ -28,8 +28,6 @@ recipients:
 The following tags are available to help you build the form:
     <r:mailer:form name=""> ... </r:mailer:form> 
     <r:mailer:text name="" /> 
-    <r:mailer:password name="" />
-    <r:mailer:file name="" />
     <r:mailer:checkbox name="" />
     <r:mailer:radio name="" />
     <r:mailer:radiogroup name=""> ... </r:mailer:radiogroup>
@@ -51,7 +49,5 @@ Simple example of a form:
 
 
 Todo:
- * Abstract tag naming, doesn't need to mimick HTML input types
- * Support for file attachments to emails
- * Validate recipient emails addresses -- at least the format
- * Better Error handling
+  * Support for file attachments to emails
+  * Tests

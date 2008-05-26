@@ -1,6 +1,5 @@
 class Mailer < ActionMailer::Base
   def generic_mail(options)
-    p :options => options
     @recipients = options[:recipients]
     @from = options[:from] || ""
     @cc = options[:cc] || ""
