@@ -8,8 +8,8 @@ module MailerTags
 
   desc %{ All mailer-related tags live inside this one. }
   tag "mailer" do |tag|
-    if config['recipients'].blank?
-      "Mailers require at least one recipient to be defined."
+    if config['recipients'].blank? or config['from'].blank?
+      "Mailers require at least one recipient and a from address to be configured."
     else
       tag.expand
     end
@@ -57,11 +57,11 @@ module MailerTags
 
   %w(text checkbox radio hidden).each do |type|
     desc %{
-      Renders a #{type} form control for a mailer form. The 'name' attribute is required.
-      All unused attributes will be added as HTML attributes on the resulting tag.}
+      Renders a #{type} input tag for a mailer form. The 'name' attribute is required.}
     tag "mailer:#{type}" do |tag|
       raise_error_if_name_missing "mailer:#{type}", tag.attr
-      result = [%(<input type="#{type}" #{mailer_attrs(tag)} />)]
+      value = (prior_value(tag) || tag.attr['value'])
+      result = [%(<input type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
       add_required(result, tag)
     end
   end
@@ -84,7 +84,7 @@ module MailerTags
   tag 'mailer:textarea' do |tag|
     raise_error_if_name_missing "mailer:textarea", tag.attr
     result =  [%(<textarea #{mailer_attrs(tag, 'rows' => '5', 'cols' => '35')}>)]
-    result << tag.expand
+    result << (prior_value(tag) || tag.expand)
     result << "</textarea>"
     add_required(result, tag)
   end
@@ -104,12 +104,16 @@ module MailerTags
     the parent is a @<r:mailer:radiogroup>...</r:mailer:radiogroup>@ }
   tag 'mailer:option' do |tag|
     raise_error_if_name_missing "mailer:option", tag.attr
-    result = ""
+
+    value = (tag.attr['value'] || tag.attr['name'])
+    selected = (prior_value(tag, tag.locals.parent_tag_name) == value)
+
     if tag.locals.parent_tag_type == 'select'
-      %(<option #{mailer_attrs(tag, 'value' => tag.attr['name'])}>#{tag.expand}</option>)
+      %(<option value="#{value}"#{%( selected="selected") if selected} #{mailer_attrs(tag)}>#{tag.expand}</option>)
     elsif tag.locals.parent_tag_type == 'radiogroup'
       tag.attr['name'] = tag.locals.parent_tag_name
-      %(<input type="radio" #{mailer_attrs(tag, 'value' => tag.attr['name'])} />)
+      value = tag.attr['value'] || tag.attr['name']
+      %(<input type="radio" value="#{value}"#{%( selected="selected") if selected} #{mailer_attrs(tag)} />)
     end
   end
 
@@ -125,9 +129,17 @@ module MailerTags
       mail.data.to_hash.to_yaml.to_s
     end
   end
+  
+  def prior_value(tag, tag_name=tag.attr['name'])
+    if mail = tag.locals.page.last_mail
+      mail.data[tag_name]
+    else
+      nil
+    end
+  end
 
   def mailer_attrs(tag, extras={})
-    attrs = {'id' => tag.attr['name'], 'class' => nil, 'value' => nil}.merge(extras)
+    attrs = {'id' => tag.attr['name'], 'class' => nil}.merge(extras)
     result = attrs.collect do |k,v|
       v = (tag.attr[k] || v)
       next if v.blank?

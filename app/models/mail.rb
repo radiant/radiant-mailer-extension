@@ -13,6 +13,11 @@ class Mail
         errors['form'] = 'Recipients are required.'
         @valid = false
       end
+      
+      if config[:from].blank?
+        errors['form'] = 'From is required.'
+        @valid = false
+      end
     
       if @required
         @required.each do |name,_|
@@ -30,7 +35,7 @@ class Mail
     return false if not valid?
 
     recipients = config[:recipients]
-    from = data[config[:from_field]] || config[:from] || "no-reply@#{request.host}"
+    from = config[:from]
     reply_to = data[config[:reply_to_field]] || config[:reply_to] || from
 
     plain_body = (page.part( :email ) ? page.render_part( :email ) : page.render_part( :email_plain ))
