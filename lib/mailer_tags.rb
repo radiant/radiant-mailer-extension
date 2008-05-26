@@ -49,10 +49,19 @@ module MailerTags
   tag "mailer:form" do |tag|
     results = [%(<a name="mailer"></a>)]
     results << %(<form action="/pages/#{tag.locals.page.id}/mail#mailer" method="post" #{mailer_attrs(tag)}">)
-    results <<   %(<div id="mail_sent" style="display:none">Mail sent!</div>)
-    results <<   %(<script type="text/javascript">if($ && location.hash == '#mail_sent'){$('mail_sent').show();}</script>)
     results <<   tag.expand
     results << %(</form>)
+  end
+  
+  desc %{
+    Outputs a bit of javascript that will cause the enclosed content
+    to be displayed when mail is successfully sent.}
+  tag "mailer:form:success" do |tag|
+    results = [%(<div id="mail_sent" style="display:none">)]
+    results << tag.expand
+    results << %(</div>)
+    results << %(<script type="text/javascript">if($ && location.hash == '#mail_sent'){$('mail_sent').show();}</script>)
+    results
   end
 
   %w(text checkbox radio hidden).each do |type|
