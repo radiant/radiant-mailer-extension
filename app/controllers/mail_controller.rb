@@ -7,10 +7,10 @@ class MailController < ApplicationController
     page = Page.find(params[:page_id])
     page.request, page.response = request, response
 
-    config = config(page)
+    config, part_page = config_and_page(page)
 
-    mail = Mail.new(page, config, params[:mailer])
-    page.last_mail = mail
+    mail = Mail.new(part_page, config, params[:mailer])
+    page.last_mail = part_page.last_mail = mail
 
     if mail.send
       redirect_to (config[:redirect_to] || "#{page.url}#mail_sent")
@@ -21,9 +21,12 @@ class MailController < ApplicationController
   
   private
 
-  def config(page)
+  def config_and_page(page)
+    until page.part(:mailer) or (not page.parent)
+      page = page.parent
+    end
     string = page.render_part(:mailer)
-    (string.empty? ? {} : YAML::load(string).symbolize_keys)
+    [(string.empty? ? {} : YAML::load(string).symbolize_keys), page]
   end
 
 end
