@@ -150,7 +150,10 @@ module MailerTags
   end
 
   def mailer_attrs(tag, extras={})
-    attrs = {'id' => tag.attr['name'], 'class' => nil}.merge(extras)
+    attrs = {
+      'id' => tag.attr['name'], 
+      'class' => nil, 
+      'size' => nil}.merge(extras)
     result = attrs.collect do |k,v|
       v = (tag.attr[k] || v)
       next if v.blank?
