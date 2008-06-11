@@ -1,25 +1,15 @@
 = Mailer Extension for Radiant
 
-Created by: M@ McCray - mattmccray.com
-   Version: 0.2.1
-   Contact: mmccray@elucidata.net
+The Mailer extension enables form mail on a page.
 
-Ported to 'mental' by: Sean Cribbs - seancribbs.com
-  Version: 0.1
-  Contact: seancribbs@gmail.com
-  
-Seriously restructured by: Nathaniel Talbott - terralien.com
-  Version: 0.2
-  Contact: nathaniel@terralien.com
 
-The Mailer extension enables form mail on a page. You can define email
-templates using pages parts (email, and/or email_html). You configure
-the recipients and other Mailer settings in a "mailer" part. Following
-is an example of a properly formed "mailer" part that defines a
-'contact' mailer:
+== Usage
+
+You can define email templates using pages parts (email, and/or email_html).
+You configure the recipients and other Mailer settings in a "mailer" part:
 
 subject: From the website of Whatever
-from: noreply@mydomain.com
+from: noreply@example.com
 redirect_to: /contact/thank-you
 recipients:
   - one@one.com
@@ -48,6 +38,39 @@ Simple example of a form:
 </r:mailer:form>
 
 
-Todo:
-  * Support for file attachments to emails
-  * Tests
+== Enabling action_mailer
+
+In environment.rb you'll probably need to change:
+
+  config.frameworks -= [ :action_mailer ]
+
+to:
+
+  config.frameworks -= []
+
+
+== Caveats
+
+Relative urls will almost certainly not work if the mailer fails validation. Solution? Only use absolute urls.
+
+
+== History
+
+Created by: M@ McCray - mattmccray.com
+   Version: 0.2.1
+   Contact: mmccray@elucidata.net
+
+Ported to 'mental' by: Sean Cribbs - seancribbs.com
+  Version: 0.1
+  Contact: seancribbs@gmail.com
+  
+Seriously restructured by: Nathaniel Talbott - terralien.com
+  Version: 0.2
+  Contact: nathaniel@terralien.com
+  Work sponsored by: Ignite Social Media, http://ignitesocialmedia.com/
+
+
+== Todo
+
+* Support for file attachments to emails
+* Tests
