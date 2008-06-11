@@ -12,7 +12,7 @@ module MailerTags
 
   desc %{ All mailer-related tags live inside this one. }
   tag "mailer" do |tag|
-    if config['recipients'].blank? or config['from'].blank?
+    if config['recipients'].blank? or (config['from'].blank? and config['from_field'].blank?)
       "Mailers require at least one recipient and a from address to be configured."
     else
       tag.expand
@@ -150,7 +150,10 @@ module MailerTags
   end
 
   def mailer_attrs(tag, extras={})
-    attrs = {'id' => tag.attr['name'], 'class' => nil}.merge(extras)
+    attrs = {
+      'id' => tag.attr['name'], 
+      'class' => nil, 
+      'size' => nil}.merge(extras)
     result = attrs.collect do |k,v|
       v = (tag.attr[k] || v)
       next if v.blank?

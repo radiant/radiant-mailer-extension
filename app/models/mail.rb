@@ -14,7 +14,7 @@ class Mail
         @valid = false
       end
       
-      if config[:from].blank?
+      if from.blank?
         errors['form'] = 'From is required.'
         @valid = false
       end
@@ -31,11 +31,14 @@ class Mail
     @valid
   end
   
+  def from
+    config[:from] || data[config[:from_field]]
+  end
+  
   def send
     return false if not valid?
 
     recipients = config[:recipients]
-    from = config[:from]
     reply_to = data[config[:reply_to_field]] || config[:reply_to] || from
 
     plain_body = (page.part( :email ) ? page.render_part( :email ) : page.render_part( :email_plain ))
