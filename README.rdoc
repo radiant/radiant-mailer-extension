@@ -8,34 +8,35 @@ The Mailer extension enables form mail on a page.
 You can define email templates using pages parts (email, and/or email_html).
 You configure the recipients and other Mailer settings in a "mailer" part:
 
-subject: From the website of Whatever
-from: noreply@example.com
-redirect_to: /contact/thank-you
-recipients:
-  - one@one.com
-  - two@two.com
+  subject: From the website of Whatever
+  from: noreply@example.com
+  redirect_to: /contact/thank-you
+  recipients:
+    - one@one.com
+    - two@two.com
 
 The following tags are available to help you build the form:
-    <r:mailer:form name=""> ... </r:mailer:form> 
-    <r:mailer:text name="" /> 
-    <r:mailer:checkbox name="" />
-    <r:mailer:radio name="" />
-    <r:mailer:radiogroup name=""> ... </r:mailer:radiogroup>
-    <r:mailer:select name=""> ... </r:mailer:select>
-    <r:mailer:textarea name=""> ... </r:mailer:textarea>
-    <r:mailer:option name="" />
-    <r:mailer:get name="" />
+
+  <r:mailer:form name=""> ... </r:mailer:form> 
+  <r:mailer:text name="" /> 
+  <r:mailer:checkbox name="" />
+  <r:mailer:radio name="" />
+  <r:mailer:radiogroup name=""> ... </r:mailer:radiogroup>
+  <r:mailer:select name=""> ... </r:mailer:select>
+  <r:mailer:textarea name=""> ... </r:mailer:textarea>
+  <r:mailer:option name="" />
+  <r:mailer:get name="" />
 
 Simple example of a form:
 
-<r:mailer:form>
- <r:mailer:hidden name="subject" value="Email from my Radiant site!" /> <br/>
-  Name:<br/>
- <r:mailer:text name="name" /> <br/>
-  Message:<br/>
- <r:mailer:textarea name="message" /> <br/>
- <input type="submit" value="Send" />
-</r:mailer:form>
+  <r:mailer:form>
+   <r:mailer:hidden name="subject" value="Email from my Radiant site!" /> <br/>
+    Name:<br/>
+   <r:mailer:text name="name" /> <br/>
+    Message:<br/>
+   <r:mailer:textarea name="message" /> <br/>
+   <input type="submit" value="Send" />
+  </r:mailer:form>
 
 
 == Enabling action_mailer
@@ -57,8 +58,8 @@ Relative urls will almost certainly not work if the mailer fails validation. Sol
 == History
 
 Created by: M@ McCray - mattmccray.com
-   Version: 0.2.1
-   Contact: mmccray@elucidata.net
+  Version: 0.2.1
+  Contact: mmccray@elucidata.net
 
 Ported to 'mental' by: Sean Cribbs - seancribbs.com
   Version: 0.1
