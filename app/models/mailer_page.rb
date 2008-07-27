@@ -27,7 +27,7 @@ class MailerPage < Page
       # If there are recipients defined, send email...
       if form_conf.has_key? :recipients
         if send_mail and form_conf.has_key? :redirect_to
-          response.redirect(form_conf[:redirect_to], :status => 302)
+          response.redirect(form_conf[:redirect_to], "302 Found")
         else
           super(request, response)
         end
