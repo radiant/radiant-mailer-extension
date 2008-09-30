@@ -2,12 +2,14 @@ module MailerTags
   include Radiant::Taggable
 
   def config
-    page = self
-    until page.part(:mailer) or (not page.parent)
-      page = page.parent
+    @config ||= begin
+      page = self
+      until page.part(:mailer) or (not page.parent)
+        page = page.parent
+      end
+      string = page.render_part(:mailer)
+      (string.empty? ? {} : YAML::load(string))
     end
-    string = page.render_part(:mailer)
-    (string.empty? ? {} : YAML::load(string))
   end
 
   desc %{ All mailer-related tags live inside this one. }
