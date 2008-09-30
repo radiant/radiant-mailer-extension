@@ -1,6 +1,6 @@
 module MailerTags
   include Radiant::Taggable
-  
+
   def config
     page = self
     until page.part(:mailer) or (not page.parent)
@@ -12,20 +12,20 @@ module MailerTags
 
   desc %{ All mailer-related tags live inside this one. }
   tag "mailer" do |tag|
-    if !Mail.valid_config?(config)
-      "Mailer config is not valid (see Mailer.valid_config?)"
-    else
+    if Mail.valid_config?(config)
       tag.expand
+    else
+      "Mailer config is not valid (see Mailer.valid_config?)"
     end
   end
-  
+
   desc %{
     Will expand if and only if there is an error with the last mail.
 
     If you specify the "on" attribute, it will only expand if there
     is an error on the named attribute, and will make the error
     message available to the mailer:error:message tag.}
-  tag "mailer:error" do |tag|
+  tag "mailer:if_error" do |tag|
     if mail = tag.locals.page.last_mail
       if on = tag.attr['on']
         if error = mail.errors[on]
@@ -39,9 +39,9 @@ module MailerTags
       end
     end
   end
-  
+
   desc %{Outputs the error message.}
-  tag "mailer:error:message" do |tag|
+  tag "mailer:if_error:message" do |tag|
     tag.locals.error_message
   end
 
@@ -51,16 +51,18 @@ module MailerTags
     Usage:
     <pre><code>  <r:mailer:form>...</r:mailer:form></code></pre>}
   tag "mailer:form" do |tag|
-    results = [%(<a name="mailer"></a>)]
-    results << %(<form action="/pages/#{tag.locals.page.id}/mail#mailer" method="post" #{mailer_attrs(tag)}">)
+    tag.attr['id'] ||= 'mailer'
+    results = []
+    action = Radiant::Config['mailer.post_to_page?'] ? tag.locals.page.url : "/pages/#{tag.locals.page.id}/mail#{tag.attr['id']}"
+    results << %(<form action="#{action}" method="post" #{mailer_attrs(tag)}">)
     results <<   tag.expand
     results << %(</form>)
   end
-  
+
   desc %{
     Outputs a bit of javascript that will cause the enclosed content
     to be displayed when mail is successfully sent.}
-  tag "mailer:form:success" do |tag|
+  tag "mailer:if_success" do |tag|
     results = [%(<div id="mail_sent" style="display:none">)]
     results << tag.expand
     results << %(</div>)
@@ -119,12 +121,14 @@ module MailerTags
     tag.attr['name'] = tag.locals.parent_tag_name
 
     value = (tag.attr['value'] || tag.expand)
-    selected = (prior_value(tag, tag.locals.parent_tag_name) == value)
+    prev_value = prior_value(tag, tag.locals.parent_tag_name)
+    checked = tag.attr.delete('selected') || tag.attr.delete('checked')
+    selected = prev_value ? prev_value == value : checked
 
     if tag.locals.parent_tag_type == 'select'
       %(<option value="#{value}"#{%( selected="selected") if selected} #{mailer_attrs(tag)}>#{tag.expand}</option>)
     elsif tag.locals.parent_tag_type == 'radiogroup'
-      %(<input type="radio" value="#{value}"#{%( selected="selected") if selected} #{mailer_attrs(tag)} />)
+      %(<input type="radio" value="#{value}"#{%( checked="checked") if selected} #{mailer_attrs(tag)} />)
     end
   end
 
@@ -140,7 +144,18 @@ module MailerTags
       mail.data.to_hash.to_yaml.to_s
     end
   end
-  
+
+  desc %{
+    Renders the contained block if a named datum was submitted via a mailer form.  Used in the 'email', 'email_html' and 'mailer' parts
+    to generate the resulting email.
+  }
+  tag 'mailer:if_value' do |tag|
+    name = tag.attr['name']
+    eq = tag.attr['equals']
+    mail = tag.locals.page.last_mail || tag.globals.page.last_mail
+    tag.expand if name && mail.data[name] && (eq.blank? || eq == mail.data[name])
+  end
+
   def prior_value(tag, tag_name=tag.attr['name'])
     if mail = tag.locals.page.last_mail
       mail.data[tag_name]
@@ -151,8 +166,8 @@ module MailerTags
 
   def mailer_attrs(tag, extras={})
     attrs = {
-      'id' => tag.attr['name'], 
-      'class' => nil, 
+      'id' => tag.attr['name'],
+      'class' => nil,
       'size' => nil}.merge(extras)
     result = attrs.collect do |k,v|
       v = (tag.attr[k] || v)
@@ -162,7 +177,7 @@ module MailerTags
     result << %(name="mailer[#{tag.attr['name']}]") unless tag.attr['name'].blank?
     result.join(' ')
   end
-  
+
   def add_required(result, tag)
     result << %(<input type="hidden" name="mailer[required][#{tag.attr['name']}]" value="#{tag.attr['required']}" />) if tag.attr['required']
     result

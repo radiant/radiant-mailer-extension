@@ -15,7 +15,7 @@ class Mail
   def valid?
     unless defined?(@valid)
       @valid = true
-      if recipients.blank? and !@required.detect{|name,_| name == config['recipients_field']}
+      if recipients.blank? and !@required.any? {|name,_| name == config['recipients_field']}
         errors['form'] = 'Recipients are required.'
         @valid = false
       end
@@ -25,7 +25,7 @@ class Mail
         @valid = false
       end
       
-      if from.blank? and !@required.detect{|name,_| name == config['from_field']}
+      if from.blank? and !@required.any? {|name,_| name == config['from_field']}
         errors['form'] = 'From is required.'
         @valid = false
       end
