@@ -16,7 +16,9 @@ module MailerProcess
 
       if mail.send
         response.redirect(config[:redirect_to], "302 Found") and return if config[:redirect_to]
-        self.last_mail = part_page.last_mail = nil
+        # Clear out the data and errors so the form isn't populated, but keep the success status around.
+        self.last_mail.data.delete_if { true }
+        self.last_mail.errors.delete_if { true }
       end
     end
     process_without_mailer(request, response)
