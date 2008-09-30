@@ -33,7 +33,26 @@ module MailerTags
           tag.expand
         end
       else
-        if !mail.valid?
+        unless mail.valid?
+          tag.expand
+        end
+      end
+    end
+  end
+
+  desc %{
+    Will expand if and only if there is NO error with the last mail.
+
+    If you specify the "on" attribute, it will only expand if there
+    is NO error on the named attribute.}
+  tag "mailer:unless_error" do |tag|
+    if mail = tag.locals.page.last_mail
+      if on = tag.attr['on']
+        unless mail.errors[on]
+          tag.expand
+        end
+      else
+        if mail.valid?
           tag.expand
         end
       end

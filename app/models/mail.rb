@@ -5,13 +5,13 @@ class Mail
     @required = @data.delete(:required)
     @errors = {}
   end
-  
+
   def self.valid_config?(config)
     return false if config['recipients'].blank? and config['recipients_field'].blank?
     return false if config['from'].blank? and config['from_field'].blank?
     true
   end
-  
+
   def valid?
     unless defined?(@valid)
       @valid = true
@@ -19,22 +19,22 @@ class Mail
         errors['form'] = 'Recipients are required.'
         @valid = false
       end
-      
+
       if recipients.any?{|e| !valid_email?(e)}
         errors['form'] = 'Recipients are invalid.'
         @valid = false
       end
-      
+
       if from.blank? and !@required.any? {|name,_| name == config['from_field']}
         errors['form'] = 'From is required.'
         @valid = false
       end
-      
+
       if !valid_email?(from)
         errors['form'] = 'From is invalid.'
         @valid = false
       end
-    
+
       if @required
         @required.each do |name,msg|
           if data[name].blank?
@@ -46,23 +46,23 @@ class Mail
     end
     @valid
   end
-  
+
   def from
     config[:from] || data[config[:from_field]]
   end
-  
+
   def recipients
     config[:recipients] || data[config[:recipients_field]].split(/,/).collect{|e| e.strip}
   end
-  
+
   def reply_to
     config[:reply_to] || data[config[:reply_to_field]]
   end
-  
+
   def sender
     config[:sender]
   end
-  
+
   def send
     return false if not valid?
 
@@ -77,7 +77,7 @@ The following information was posted:
 #{data.to_hash.to_yaml}
       EMAIL
     end
-    
+
     headers = { 'Reply-To' => reply_to }
     if sender
       headers['Return-Path'] = sender
@@ -98,13 +98,13 @@ The following information was posted:
     errors['base'] = e.message
     @sent = false
   end
-  
+
   def sent?
     @sent
   end
-  
+
   protected
-  
+
   def valid_email?(email)
     (email.blank? ? true : email =~ /.@.+\../)
   end
