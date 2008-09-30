@@ -63,11 +63,7 @@ module MailerTags
     Outputs a bit of javascript that will cause the enclosed content
     to be displayed when mail is successfully sent.}
   tag "mailer:if_success" do |tag|
-    results = [%(<div id="mail_sent" style="display:none">)]
-    results << tag.expand
-    results << %(</div>)
-    results << %(<script type="text/javascript">if($ && location.hash == '#mail_sent'){$('mail_sent').show();}</script>)
-    results
+    tag.expand if tag.locals.page.last_mail && tag.locals.page.last_mail.sent?
   end
 
   %w(text checkbox radio hidden).each do |type|

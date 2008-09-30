@@ -93,6 +93,14 @@ The following information was posted:
       :cc => data[config[:cc_field]] || config[:cc] || "",
       :headers => headers
     )
+    @sent = true
+  rescue Exception => e
+    errors['base'] = e.message
+    @sent = false
+  end
+  
+  def sent?
+    @sent
   end
   
   protected
