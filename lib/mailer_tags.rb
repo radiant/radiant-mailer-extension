@@ -74,8 +74,8 @@ module MailerTags
   tag "mailer:form" do |tag|
     tag.attr['id'] ||= 'mailer'
     results = []
-    action = Radiant::Config['mailer.post_to_page?'] ? tag.locals.page.url : "/pages/#{tag.locals.page.id}/mail#{tag.attr['id']}"
-    results << %(<form action="#{action}" method="post" #{mailer_attrs(tag)}">)
+    action = Radiant::Config['mailer.post_to_page?'] ? tag.locals.page.url : "/pages/#{tag.locals.page.id}/mail##{tag.attr['id']}"
+    results << %(<form action="#{action}" method="post" #{mailer_attrs(tag)}>)
     results <<   tag.expand
     results << %(</form>)
   end
@@ -135,8 +135,9 @@ module MailerTags
     @<r:mailer:select>...</r:mailer:select>@ tag, an @<input type="radio"/>@ tag if
     the parent is a @<r:mailer:radiogroup>...</r:mailer:radiogroup>@ }
   tag 'mailer:option' do |tag|
-    tag.attr['name'] = tag.locals.parent_tag_name
-
+    if tag.locals.parent_tag_type == 'radiogroup'
+      tag.attr['name'] ||= tag.locals.parent_tag_name
+    end
     value = (tag.attr['value'] || tag.expand)
     prev_value = prior_value(tag, tag.locals.parent_tag_name)
     checked = tag.attr.delete('selected') || tag.attr.delete('checked')
