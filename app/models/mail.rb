@@ -1,7 +1,7 @@
 class Mail
   attr_reader :page, :config, :data, :errors
   def initialize(page, config, data)
-    @page, @config, @data = page, config, data
+    @page, @config, @data = page, config.with_indifferent_access, data
     @required = @data.delete(:required)
     @errors = {}
   end
@@ -15,7 +15,7 @@ class Mail
   def valid?
     unless defined?(@valid)
       @valid = true
-      if recipients.blank? and !@required.any? {|name,_| name == config['recipients_field']}
+      if recipients.blank? and !is_required_field?(config[:recipients_field])
         errors['form'] = 'Recipients are required.'
         @valid = false
       end
@@ -25,7 +25,7 @@ class Mail
         @valid = false
       end
 
-      if from.blank? and !@required.any? {|name,_| name == config['from_field']}
+      if from.blank? and !is_required_field?(config[:from_field])
         errors['form'] = 'From is required.'
         @valid = false
       end
@@ -36,7 +36,7 @@ class Mail
       end
 
       if @required
-        @required.each do |name,msg|
+        @required.each do |name, msg|
           if data[name].blank?
             errors[name] = ((msg.blank? || %w(1 true required).include?(msg)) ? "is required." : msg)
             @valid = false
@@ -63,6 +63,14 @@ class Mail
     config[:sender]
   end
 
+  def subject
+    data[:subject] || config[:subject] || "Form Mail from #{page.request.host}"
+  end
+  
+  def cc
+    data[config[:cc_field]] || config[:cc] || ""
+  end
+  
   def send
     return false if not valid?
 
@@ -87,10 +95,10 @@ The following information was posted:
     Mailer.deliver_generic_mail(
       :recipients => recipients,
       :from => from,
-      :subject => data[:subject] || config[:subject] || "Form Mail from #{page.request.host}",
+      :subject => subject,
       :plain_body => plain_body,
       :html_body => html_body,
-      :cc => data[config[:cc_field]] || config[:cc] || "",
+      :cc => cc,
       :headers => headers
     )
     @sent = true
@@ -107,5 +115,9 @@ The following information was posted:
 
   def valid_email?(email)
     (email.blank? ? true : email =~ /.@.+\../)
+  end
+  
+  def is_required_field?(field_name)
+    @required && @required.any? {|name,_| name == field_name}
   end
 end
