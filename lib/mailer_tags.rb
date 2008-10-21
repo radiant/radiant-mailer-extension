@@ -112,7 +112,7 @@ module MailerTags
   end
 
   desc %{
-    Renders a <textarea>...</textarea> tag for a mailer form. The `name' attribute is required. }
+    Renders a <textarea>...</textarea> tag for a mailer form. The 'name' attribute is required. }
   tag 'mailer:textarea' do |tag|
     raise_error_if_name_missing "mailer:textarea", tag.attr
     result =  [%(<textarea #{mailer_attrs(tag, 'rows' => '5', 'cols' => '35')}>)]
@@ -161,6 +161,58 @@ module MailerTags
     else
       mail.data.to_hash.to_yaml.to_s
     end
+  end
+  
+  desc "
+    Provides a mechanism to iterate over array datum submitted via a mailer form.  
+     Used in the 'email', 'email_html', and 'mailer' parts to generate the resulting email.
+     May work OK nested, but this hasn't been tested."
+  tag 'mailer:get_each' do |tag|
+    name = tag.attr['name']
+    mail = tag.locals.page.last_mail
+    if tag.locals.mailer_element then
+    	ary=tag.locals.mailer_element
+    else
+	    ary=mail.data[name]
+	  end
+    result=[]
+    puts ary.class
+    puts ary.inspect
+    case ary
+    	when Array
+		    ary.each do |element|
+		    	tag.locals.mailer_key=nil
+	  		  tag.locals.mailer_element = element
+  			  result << tag.expand
+  			end
+  		else
+  			ary.each do |key, element|
+  				tag.locals.mailer_key=key
+  				tag.locals.mailer_element = element
+  			  result << tag.expand
+  			end
+  	end
+	  result
+  end
+  
+  desc %{
+    For use within a mailer:get_each to output values from each element of the
+    array or hash. }
+  tag 'mailer:element' do |tag|
+    name = tag.attr['name']
+    element = tag.locals.mailer_element
+    if name
+      element.is_a?(Array) ? element[name].to_sentence : element[name]
+    else
+      element.to_yaml.to_s
+    end
+  end
+  
+   desc %{
+    For use within a mailer:get_each to output the index/key for each element of the
+    hash. }
+  tag 'mailer:index' do |tag|
+    tag.locals.mailer_key || nil
   end
 
   desc %{
