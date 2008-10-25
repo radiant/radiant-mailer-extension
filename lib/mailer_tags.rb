@@ -149,19 +149,6 @@ module MailerTags
       %(<input type="radio" value="#{value}"#{%( checked="checked") if selected} #{mailer_attrs(tag)} />)
     end
   end
-
-  desc %{
-    Renders the value of a datum submitted via a mailer form.  Used in the 'email', 'email_html', and
-    'mailer' parts to generate the resulting email. }
-  tag 'mailer:get' do |tag|
-    name = tag.attr['name']
-    mail = tag.locals.page.last_mail
-    if name
-      mail.data[name].is_a?(Array) ? mail.data[name].to_sentence : mail.data[name]
-    else
-      mail.data.to_hash.to_yaml.to_s
-    end
-  end
   
   desc "
     Provides a mechanism to iterate over array datum submitted via a mailer form.  
@@ -176,12 +163,12 @@ module MailerTags
 	    ary=mail.data[name]
 	  end
     result=[]
-    puts ary.class
-    puts ary.inspect
+    return '' if ary.blank?
+
     case ary
     	when Array
-		    ary.each do |element|
-		    	tag.locals.mailer_key=nil
+		    ary.each_with_index do |element, idx|
+		    	tag.locals.mailer_key=idx
 	  		  tag.locals.mailer_element = element
   			  result << tag.expand
   			end
@@ -194,21 +181,27 @@ module MailerTags
   	end
 	  result
   end
-  
+
   desc %{
-    For use within a mailer:get_each to output values from each element of the
-    array or hash. }
-  tag 'mailer:element' do |tag|
+    Renders the value of a datum submitted via a mailer form.  Used in the 'email', 'email_html', and
+    'mailer' parts to generate the resulting email.
+    When used within mailer:get_each it defaults to getting elements within that array. }
+  tag 'mailer:get' do |tag|
     name = tag.attr['name']
-    element = tag.locals.mailer_element
-    if name
-      element.is_a?(Array) ? element[name].to_sentence : element[name]
+    mail = tag.locals.page.last_mail
+    if tag.locals.mailer_element then
+    	element = tag.locals.mailer_element
     else
-      element.to_yaml.to_s
+      element = tag.locals.page.last_mail.data
+    end
+    if name
+      element[name].is_a?(Array) ? element[name].to_sentence : element[name]
+    else
+      element.to_hash.to_yaml.to_s
     end
   end
-  
-   desc %{
+    
+  desc %{
     For use within a mailer:get_each to output the index/key for each element of the
     hash. }
   tag 'mailer:index' do |tag|

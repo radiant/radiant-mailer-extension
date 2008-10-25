@@ -238,6 +238,38 @@ describe "MailerTags" do
     end
   end
   
+  describe "<r:mailer:get_each>" do
+  	before :each do
+  		# This simulates variables like :
+			#   products[0][qty]=10
+			#   products[0][name]=foo
+			#   products[1][qty]=5
+			#   products[1][name]=bar
+  		test_array=[ { 'qty' => 10, 'name' => 'foo' }, 
+  		             { 'qty' => 5, 'name' => 'bar' } ]
+  		@page = pages(:mail_form)
+  		@page.last_mail = @mail = Mail.new(@page, @page.config, 'qty' => 'wrong', 'products' => test_array)
+  	end
+  	
+  	it "should not alter the content on its own" do
+  		@page.should render('<r:mailer:get_each />').as('')
+  	end
+  	
+  	it "should make mailer:get use the local variables" do
+  		# If this fails, it will show "wrongwrong" or something like that
+  		@page.should render('<r:mailer:get_each name="products"><r:mailer:get name="qty" /></r:mailer:get_each>').as('105')
+  	end
+  	
+  	it "should iterate and provide mailer:get the local variables" do
+  		@page.should render('<r:mailer:get_each name="products"><r:mailer:get name="qty" />x<r:mailer:get name="name" />,</r:mailer:get_each>').as('10xfoo,5xbar,')
+  	end
+  	
+  	it "should provide mailer:index" do
+  		@page.should render('<r:mailer:get_each name="products"><r:mailer:index /><r:mailer:get name="name" /></r:mailer:get_each>').as('0foo1bar')
+  	end
+  	
+  end
+  
   describe "<r:mailer:if_value>" do
     before :each do
       @page = pages(:mail_form)
