@@ -31,7 +31,6 @@ available:
 
   <r:mailer:get name="" />
   <r:mailer:get_each name=""> ... </r:mailer:get_each>
-    <r:mailer:element name="" />
     <r:mailer:index />
 
 Simple example of a form:
