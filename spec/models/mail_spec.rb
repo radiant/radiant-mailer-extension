@@ -94,6 +94,25 @@ describe Mail do
   it "should return a blank cc when not in the data or configuration" do
     @mail.cc.should be_blank
   end
+
+  it "should derive the filesize_limit from the configuration" do
+    @mail.config[:filesize_limit] = 1000
+    @mail.filesize_limit.should == 1000
+  end
+  
+  it "should return 0 as filesize_limit when not in the configuration" do
+    @mail.filesize_limit.should == 0
+  end
+  
+  it "should derive the file field from the data when configured" do
+    file = StringIO.new("test_data")
+    @mail.data['file'] = file
+    @mail.files.should == [file]
+  end
+  
+  it "should return an empty files array when not in the data" do
+    @mail.files.should == []
+  end
   
   it "should initially have no errors" do
     @mail.errors.should == {}

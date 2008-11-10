@@ -46,7 +46,7 @@ class Mail
     end
     @valid
   end
-
+  
   def from
     config[:from] || data[config[:from_field]]
   end
@@ -71,6 +71,18 @@ class Mail
     data[config[:cc_field]] || config[:cc] || ""
   end
   
+  def files
+    res = []
+    data.each_value do |d|
+      res << d if StringIO === d
+    end
+    res
+  end
+  
+  def filesize_limit
+    config[:filesize_limit] || 0
+  end
+
   def send
     return false if not valid?
 
@@ -99,7 +111,9 @@ The following information was posted:
       :plain_body => plain_body,
       :html_body => html_body,
       :cc => cc,
-      :headers => headers
+      :headers => headers,
+      :files => files,
+      :filesize_limit => filesize_limit
     )
     @sent = true
   rescue Exception => e
