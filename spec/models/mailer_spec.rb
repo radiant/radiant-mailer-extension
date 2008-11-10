@@ -61,6 +61,38 @@ describe "Mailer" do
     @deliveries.first['Reply-To'].inspect.should match(/sean@cribbs.com/)
   end
   
+  describe "file attachment" do
+    before(:each) do
+      @f1 = mock("StringIO")
+      @f2 = mock("StringIO")
+      
+      @f1.stub!(:read).and_return("data1")
+      @f2.stub!(:read).and_return("data2")
+      
+      @f1.stub!(:original_filename).and_return("filename1.ext")
+      @f2.stub!(:original_filename).and_return("filename2.ext")
+
+      @f1.stub!(:size).and_return(1000)
+      @f2.stub!(:size).and_return(2000)
+    end
+    
+    it "should attach 2 files without limit" do
+      do_deliver(:files => [@f1, @f2])
+      @deliveries.first.attachments.size.should == 2
+    end
+    
+    it "should add 2 files with large limit" do
+      do_deliver(:files => [@f1, @f2], :filesize_limit => 3000)
+      @deliveries.first.attachments.size.should == 2
+    end
+
+    it "should raise with small limit" do
+      lambda do
+        do_deliver(:files => [@f1], :filesize_limit => 900)
+      end.should raise_error(RuntimeError)#, "The file '#{@f1.original_filename}' is too large. The maximum size allowed is #{900} bytes.")
+    end
+  end
+  
   # Not sure that charset works, can see no effect in tests
   it "should set the default character set to utf8" do
     pending
