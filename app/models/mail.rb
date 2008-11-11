@@ -74,7 +74,7 @@ class Mail
   def files
     res = []
     data.each_value do |d|
-      res << d if StringIO === d
+      res << d if StringIO === d or Tempfile === d
     end
     res
   end

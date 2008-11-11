@@ -105,9 +105,12 @@ describe Mail do
   end
   
   it "should derive the file field from the data when configured" do
-    file = StringIO.new("test_data")
-    @mail.data['file'] = file
-    @mail.files.should == [file]
+    file1 = StringIO.new("test_data")
+    file2 = Tempfile.new("test2")
+    @mail.data['file1'] = file1
+    @mail.data['file2'] = file2
+    @mail.files.include?(file1).should == true
+    @mail.files.include?(file2).should == true
   end
   
   it "should return an empty files array when not in the data" do
