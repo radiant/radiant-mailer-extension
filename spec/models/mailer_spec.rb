@@ -17,7 +17,7 @@ describe "Mailer" do
 
   it "should be the multipart/alternative content type" do
     do_deliver
-    @deliveries.first.content_type.should == 'multipart/alternative'
+    @deliveries.first.content_type.should == 'multipart/mixed'
   end
   
   it "should render a plain body" do
@@ -63,17 +63,15 @@ describe "Mailer" do
   
   describe "file attachment" do
     before(:each) do
-      @f1 = mock("StringIO")
-      @f2 = mock("StringIO")
-      
-      @f1.stub!(:read).and_return("data1")
-      @f2.stub!(:read).and_return("data2")
-      
-      @f1.stub!(:original_filename).and_return("filename1.ext")
-      @f2.stub!(:original_filename).and_return("filename2.ext")
-
-      @f1.stub!(:size).and_return(1000)
-      @f2.stub!(:size).and_return(2000)
+      @f1 = mock("StringIO",
+        :read => "data1",
+        :original_filename => "filename1.ext",
+        :size => 1000
+      )
+      @f2 = mock("StringIO",
+        :read => "data2",
+        :original_filename => "filename2.ext",
+        :size => 2000)
     end
     
     it "should attach 2 files without limit" do
