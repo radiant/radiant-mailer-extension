@@ -85,12 +85,12 @@ describe "MailerTags" do
   describe "<r:mailer:form>" do
     it "should render a form that posts back to the page when mailer.post_to_page? is true" do
       Radiant::Config['mailer.post_to_page?'] = true
-      pages(:mail_form).should render('<r:mailer:form />').as('<form action="/mail-form/" method="post" id="mailer"></form>')
+      pages(:mail_form).should render('<r:mailer:form />').as('<form action="/mail-form/" method="post" enctype="multipart/form-data" id="mailer"></form>')
     end
 
     it "should render a form that posts back to the controller when mailer.post_to_page? is false" do
       Radiant::Config['mailer.post_to_page?'] = false
-      pages(:mail_form).should render('<r:mailer:form />').as(%Q{<form action="/pages/#{page_id(:mail_form)}/mail#mailer" method="post" id="mailer"></form>})
+      pages(:mail_form).should render('<r:mailer:form />').as(%Q{<form action="/pages/#{page_id(:mail_form)}/mail#mailer" method="post" enctype="multipart/form-data" id="mailer"></form>})
     end
 
     it "should render permitted passed attributes as attributes of the form tag" do
@@ -235,6 +235,12 @@ describe "MailerTags" do
     
     it "should render nothing when the value is not present" do
       @page.should render('<r:mailer:get name="body" />').as('')
+    end
+    
+    it "should render original_filename if respond" do
+      file = mock(StringIO, :original_filename => "readme.txt")
+      @page.last_mail = @mail = Mail.new(@page, @page.config, 'file' => file)
+      @page.should render('<r:mailer:get name="file" />').as('readme.txt')
     end
   end
   
