@@ -37,9 +37,16 @@ class Mail
 
       if @required
         @required.each do |name, msg|
-          if data[name].blank?
-            errors[name] = ((msg.blank? || %w(1 true required).include?(msg)) ? "is required." : msg)
-            @valid = false
+          if "as_email" == msg
+            unless valid_email?(data[name])
+              errors[name] = "invalid email address."
+              @valid = false
+            end
+          else
+            if data[name].blank?
+              errors[name] = ((msg.blank? || %w(1 true required not_blank).include?(msg)) ? "is required." : msg)
+              @valid = false
+            end
           end
         end
       end

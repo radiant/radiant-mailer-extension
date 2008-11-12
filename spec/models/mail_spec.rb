@@ -149,10 +149,32 @@ describe Mail do
     @mail.errors['form'].should_not be_blank
   end
 
-  it "should be invalid when a required field is missing" do
-    @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com'}, {:required => {'first_name' => 'true'}})
+  describe "should be invalid when a required field is missing and a require set to" do
+    ["true", "1", "required", "not_blank"].each do |value|
+      it "should be invalid when " do
+        @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com'}, {:required => {'first_name' => value}})
+        @mail.should_not be_valid
+        @mail.errors['first_name'].should_not be_blank
+      end
+    end
+  end
+  
+  describe "should be valid when a require set to" do
+    ["true", "1", "required", "not_blank"].each do |value|
+      it "#{value}" do
+        @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com'},
+          {:required => {'first_name' => value}, 'first_name' => "Name"})
+        @mail.should be_valid
+        @mail.errors['first_name'].should be_blank
+      end
+    end
+  end
+  
+  it "should be invalid when a required field is invalid email" do
+    @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com'},
+      {:required => {'first_email' => "as_email"}, 'first_email' => "at@.com"})
     @mail.should_not be_valid
-    @mail.errors['first_name'].should_not be_blank
+    @mail.errors['first_email'].should_not be_blank
   end
 
   it "should not send the mail if invalid" do
