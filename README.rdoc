@@ -21,10 +21,12 @@ The following tags are available to help you build the form:
   <r:mailer:text name="" /> 
   <r:mailer:checkbox name="" />
   <r:mailer:radio name="" />
+  <r:mailer:file name="" />
   <r:mailer:radiogroup name=""> ... </r:mailer:radiogroup>
   <r:mailer:select name=""> ... </r:mailer:select>
   <r:mailer:textarea name=""> ... </r:mailer:textarea>
   <r:mailer:option name="" />
+  <r:mailer:submit name="" />
   <r:mailer:get name="" />
 
 Simple example of a form:
@@ -35,9 +37,24 @@ Simple example of a form:
    <r:mailer:text name="name" /> <br/>
     Message:<br/>
    <r:mailer:textarea name="message" /> <br/>
-   <input type="submit" value="Send" />
+   <r:mailer:submit name="Send" />
   </r:mailer:form>
 
+== Required fields
+
+You can specify fields which must be populated or the form will be invalid and will redisplay the page with an error informing the user to populate those fields. You can also specify fields which must be validated 'as_email' (i.e. a@b.com).
+
+Simple example of a required field:
+
+  <r:mailer:form>
+   ...
+    Name:<br/>
+   <r:mailer:text name="name" required="true"/> <br/>
+    Reply-To:<br/>
+   <r:mailer:text name="reply_email" required="as_email"/> <br/>
+   ...
+   <r:mailer:submit name="Send" />
+  </r:mailer:form>
 
 == User-provided Configuration
 
