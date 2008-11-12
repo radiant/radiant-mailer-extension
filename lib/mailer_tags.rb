@@ -101,8 +101,9 @@ module MailerTags
   desc %{
     Renders a submit input tag for a mailer form. The 'name' attribute is required.}
   tag "mailer:submit" do |tag|
-    raise_error_if_name_missing "mailer:submit", tag.attr
+    #raise_error_if_name_missing "mailer:submit", tag.attr
     value = tag.attr['value'] || tag.attr['name']
+    tag.attr.merge!("name" => "mailer-form-button")
     result = [%(<input type="submit" value="#{value}" #{mailer_attrs(tag)} />)]
   end
 
