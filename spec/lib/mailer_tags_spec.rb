@@ -237,10 +237,27 @@ describe "MailerTags" do
       @page.should render('<r:mailer:get name="body" />').as('')
     end
     
-    it "should render original_filename if respond" do
-      file = mock(StringIO, :original_filename => "readme.txt")
-      @page.last_mail = @mail = Mail.new(@page, @page.config, 'file' => file)
-      @page.should render('<r:mailer:get name="file" />').as('readme.txt')
+    describe 'if responds to original_filename' do
+      it "should render it for single files" do
+        file = mock(StringIO, :original_filename => "readme.txt")
+        @page.last_mail = @mail = Mail.new(@page, @page.config, 'file' => file)
+        @page.should render('<r:mailer:get name="file" />').as('readme.txt')
+      end
+      # It is valid to have 2 files on a single input name
+      it "should render them as sentence for 2 files" do
+        file = mock(StringIO, :original_filename => "readme.txt")
+        file2 = mock(StringIO, :original_filename => "install.txt")
+        @page.last_mail = @mail = Mail.new(@page, @page.config, 'file' => [file, file2])
+        @page.should render('<r:mailer:get name="file" />').as('readme.txt and install.txt')
+      end
+      # It is valid to have multiple files on a single input name
+      it "should render them as sentence for multiple files" do
+        file = mock(StringIO, :original_filename => "readme.txt")
+        file2 = mock(StringIO, :original_filename => "install.txt")
+        file3 = mock(StringIO, :original_filename => "rakefile")
+        @page.last_mail = @mail = Mail.new(@page, @page.config, 'file' => [file, file2, file3])
+        @page.should render('<r:mailer:get name="file" />').as('readme.txt, install.txt, and rakefile')
+      end
     end
   end
   
