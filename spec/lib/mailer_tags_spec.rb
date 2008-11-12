@@ -145,6 +145,24 @@ describe "MailerTags" do
     end
   end
 
+  describe "<r:mailer:submit>" do
+    it "should render an input tag with the type submit" do
+      pages(:mail_form).should render("<r:mailer:submit name='foo' />").as(%Q{<input type="submit" value="foo" id="foo" name="mailer[foo]" />})
+    end
+
+    it "should render permitted passed attributes as attributes of the input tag" do
+      pages(:mail_form).should render("<r:mailer:submit name='foo' class='bar'/>").as(%Q{<input type="submit" value="foo" class="bar" id="foo" name="mailer[foo]" />})
+    end
+
+    it "should render the specified value as the value attribute" do
+      pages(:mail_form).should render("<r:mailer:submit name='foo' value='bar'/>").as(%Q{<input type="submit" value="bar" id="foo" name="mailer[foo]" />})
+    end
+
+    it "should raise an error if the name attribute is not specified" do
+      pages(:mail_form).should render("<r:mailer:submit />").with_error("`mailer:submit' tag requires a `name' attribute")
+    end
+  end
+
   describe "<r:mailer:select>" do
     it "should render a select tag" do
       pages(:mail_form).should render('<r:mailer:select name="foo" />').as('<select size="1" id="foo" name="mailer[foo]"></select>')
