@@ -42,6 +42,12 @@ class Mail
               errors[name] = "invalid email address."
               @valid = false
             end
+          elsif m = msg.match(/\/(.*)\//)
+            regex = Regexp.new(m[1])
+            unless data[name] =~ regex
+              errors[name] = "doesn't match regex (#{m[1]})"
+              @valid = false
+            end
           else
             if data[name].blank?
               errors[name] = ((msg.blank? || %w(1 true required not_blank).include?(msg)) ? "is required." : msg)
