@@ -85,12 +85,50 @@ describe "MailerTags" do
   describe "<r:mailer:form>" do
     it "should render a form that posts back to the page when mailer.post_to_page? is true" do
       Radiant::Config['mailer.post_to_page?'] = true
-      pages(:mail_form).should render('<r:mailer:form />').as('<form action="/mail-form/" method="post" enctype="multipart/form-data" id="mailer"></form>')
+      pages(:mail_form).should render('<r:mailer:form />').as(
+        %(<form action="/mail-form/" method="post" enctype="multipart/form-data" id="mailer"></form>
+<script type="text/javascript">
+  function disableSubmitButtons()
+  {
+    var buttons = document.getElementsByName("mailer[mailer-form-button]");
+    for( var idx = 0; idx < buttons.length; idx++ )
+    {
+      buttons[idx].disabled = true;
+    }
+  }
+  function showSubmitPlaceholder()
+  {
+    var submitplaceholder = document.getElementById("submit-placeholder-part");
+    if (submitplaceholder != null)
+    {
+      submitplaceholder.style.display="";
+    }
+  }
+</script>))
     end
 
     it "should render a form that posts back to the controller when mailer.post_to_page? is false" do
       Radiant::Config['mailer.post_to_page?'] = false
-      pages(:mail_form).should render('<r:mailer:form />').as(%Q{<form action="/pages/#{page_id(:mail_form)}/mail#mailer" method="post" enctype="multipart/form-data" id="mailer"></form>})
+      pages(:mail_form).should render('<r:mailer:form />').as(
+        %(<form action="/pages/#{page_id(:mail_form)}/mail#mailer" method="post" enctype="multipart/form-data" id="mailer"></form>
+<script type="text/javascript">
+  function disableSubmitButtons()
+  {
+    var buttons = document.getElementsByName("mailer[mailer-form-button]");
+    for( var idx = 0; idx < buttons.length; idx++ )
+    {
+      buttons[idx].disabled = true;
+    }
+  }
+  function showSubmitPlaceholder()
+  {
+    var submitplaceholder = document.getElementById("submit-placeholder-part");
+    if (submitplaceholder != null)
+    {
+      submitplaceholder.style.display="";
+    }
+  }
+</script>))
     end
 
     it "should render permitted passed attributes as attributes of the form tag" do
@@ -147,19 +185,23 @@ describe "MailerTags" do
 
   describe "<r:mailer:submit>" do
     it "should render an input tag with the type submit" do
-      pages(:mail_form).should render("<r:mailer:submit name='foo' />").as(%Q{<input type="submit" value="foo" id="mailer-form-button" name="mailer[mailer-form-button]" />})
+      pages(:mail_form).should render("<r:mailer:submit name='foo' />").as(
+        %Q{<input onclick="disableSubmitButtons(); showSubmitPlaceholder();" type="submit" value="foo" id="mailer-form-button" name="mailer[mailer-form-button]" />})
     end
 
     it "should render permitted passed attributes as attributes of the input tag" do
-      pages(:mail_form).should render("<r:mailer:submit name='foo' class='bar'/>").as(%Q{<input type="submit" value="foo" class="bar" id="mailer-form-button" name="mailer[mailer-form-button]" />})
+      pages(:mail_form).should render("<r:mailer:submit name='foo' class='bar'/>").as(
+        %Q{<input onclick="disableSubmitButtons(); showSubmitPlaceholder();" type="submit" value="foo" class="bar" id="mailer-form-button" name="mailer[mailer-form-button]" />})
     end
 
     it "should render the specified value as the value attribute" do
-      pages(:mail_form).should render("<r:mailer:submit name='foo' value='bar'/>").as(%Q{<input type="submit" value="bar" id="mailer-form-button" name="mailer[mailer-form-button]" />})
+      pages(:mail_form).should render("<r:mailer:submit name='foo' value='bar'/>").as(
+        %Q{<input onclick="disableSubmitButtons(); showSubmitPlaceholder();" type="submit" value="bar" id="mailer-form-button" name="mailer[mailer-form-button]" />})
     end
 
     it "should not raise an error if the name attribute is not specified" do
-      pages(:mail_form).should render("<r:mailer:submit />").as(%Q{<input type="submit" value="" id="mailer-form-button" name="mailer[mailer-form-button]" />})
+      pages(:mail_form).should render("<r:mailer:submit />").as(
+        %Q{<input onclick="disableSubmitButtons(); showSubmitPlaceholder();" type="submit" value="" id="mailer-form-button" name="mailer[mailer-form-button]" />})
     end
   end
 
