@@ -117,13 +117,14 @@ module MailerTags
     end
   end
   
-  desc %{
-    Renders a submit input tag for a mailer form. The 'name' attribute is required.}
-  tag "mailer:submit" do |tag|
-    #raise_error_if_name_missing "mailer:submit", tag.attr
-    value = tag.attr['value'] || tag.attr['name']
-    tag.attr.merge!("name" => "mailer-form-button")
-    result = [%(<input onclick="disableSubmitButtons(); showSubmitPlaceholder();" type="submit" value="#{value}" #{mailer_attrs(tag)} />)]
+  %w(submit image).each do |type|
+    desc %{
+      Renders a #{type} input tag for a mailer form. The 'name' attribute is required.}
+    tag "mailer:#{type}" do |tag|
+      value = tag.attr['value'] || tag.attr['name']
+      tag.attr.merge!("name" => "mailer-form-button")
+      result = [%(<input onclick="disableSubmitButtons(); showSubmitPlaceholder();" type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
+    end
   end
 
   desc %{
