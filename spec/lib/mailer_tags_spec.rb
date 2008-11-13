@@ -204,6 +204,16 @@ describe "MailerTags" do
         %Q{<input onclick="disableSubmitButtons(); showSubmitPlaceholder();" type="submit" value="" id="mailer-form-button" name="mailer[mailer-form-button]" />})
     end
   end
+  
+  describe "<r:mailer:submit_placeholder>" do
+    it "should render an placeholder div if submit_placeholder esists" do
+      pages(:mail_form).should render("<r:mailer:submit_placeholder />").as(
+        %Q{<div id="submit-placeholder-part" style="display:none">sending email...</div>})
+    end
+    it "should render nothing if submit_placeholder doesn't esist" do
+      pages(:plain_mail).should render("<r:mailer:submit_placeholder />").as("")
+    end
+  end
 
   describe "<r:mailer:select>" do
     it "should render a select tag" do

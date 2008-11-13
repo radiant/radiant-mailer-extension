@@ -127,6 +127,18 @@ module MailerTags
   end
 
   desc %{
+    Renders a hidden div containing the contents of the submit_placeholder page part. The
+    div will be shown when a user submits a mailer form.
+  }
+  tag "mailer:submit_placeholder" do |tag|
+    if part(:submit_placeholder)
+      results = %Q(<div id="submit-placeholder-part" style="display:none">)
+      results << render_part(:submit_placeholder)
+      results << %Q(</div>)
+    end
+  end
+
+  desc %{
     Renders a @<select>...</select>@ tag for a mailer form.  The 'name' attribute is required.
     @<r:option />@ tags may be nested inside the tag to automatically generate options.}
   tag 'mailer:select' do |tag|
