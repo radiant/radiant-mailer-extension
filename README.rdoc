@@ -43,7 +43,7 @@ Simple example of a form:
 
 === Required fields
 
-You can specify fields which must be populated or the form will be invalid and will redisplay the page with an error informing the user to populate those fields. You can also specify fields which must be validated 'as_email' (i.e. a@b.com).
+You can specify fields which must be populated or the form will be invalid and will redisplay the page with an error informing the user to populate those fields.
 
 Simple example of a required field:
 
@@ -51,8 +51,41 @@ Simple example of a required field:
    ...
     Name:<br/>
    <r:mailer:text name="name" required="true"/> <br/>
+   ...
+   <r:mailer:submit name="Send" />
+  </r:mailer:form>
+
+Simple example of a required field with user-defined message:
+
+  <r:mailer:form>
+   ...
+    Name:<br/>
+   <r:mailer:text name="name" required="should not be blank"/> <br/>
+   ...
+   <r:mailer:submit name="Send" />
+  </r:mailer:form>
+
+You can also specify fields which must be validated 'as_email' (i.e. a@b.com).
+
+Simple example of a required field with email address validation:
+
+  <r:mailer:form>
+   ...
     Reply-To:<br/>
    <r:mailer:text name="reply_email" required="as_email"/> <br/>
+   ...
+   <r:mailer:submit name="Send" />
+  </r:mailer:form>
+
+You can also specify fields which must be validated as defined regexp (i.e. /^\d{2}\.\d{2}\.\d{4}\$/ for date dd.mm.yyyy).
+
+
+Simple example of a required field with regexp validation:
+
+  <r:mailer:form>
+   ...
+    Birthday:<br/>
+   <r:mailer:text name="birthday" required="/^\d{2}\.\d{2}\.\d{4}\$/"/> <br/>
    ...
    <r:mailer:submit name="Send" />
   </r:mailer:form>
