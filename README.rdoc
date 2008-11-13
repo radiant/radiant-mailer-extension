@@ -19,6 +19,8 @@ The following tags are available to help you build the form:
 
   <r:mailer:form name=""> ... </r:mailer:form> 
   <r:mailer:text name="" /> 
+  <r:mailer:password name="" /> 
+  <r:mailer:reset name="" /> 
   <r:mailer:checkbox name="" />
   <r:mailer:radio name="" />
   <r:mailer:file name="" />

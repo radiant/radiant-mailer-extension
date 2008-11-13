@@ -153,7 +153,7 @@ describe "MailerTags" do
     end
   end
 
-  %w(text checkbox radio hidden file).each do |type|
+  %w(text password reset checkbox radio hidden file).each do |type|
     describe "<r:mailer:#{type}>" do
       it "should render an input tag with the type #{type}" do
         pages(:mail_form).should render("<r:mailer:#{type} name='foo' />").as(%Q{<input type="#{type}" value="" id="foo" name="mailer[foo]" />})
