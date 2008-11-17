@@ -1,5 +1,6 @@
 class Mail
   attr_reader :page, :config, :data, :errors
+
   def initialize(page, config, data)
     @page, @config, @data = page, config.with_indifferent_access, data
     @required = @data.delete(:required)
@@ -7,9 +8,23 @@ class Mail
   end
 
   def self.valid_config?(config)
-    return false if config['recipients'].blank? and config['recipients_field'].blank?
-    return false if config['from'].blank? and config['from_field'].blank?
-    true
+    config_errors(config).empty?
+  end
+  
+  def self.config_errors(config)
+    config_errors = {}
+    %w(recipients from).each do |required_field|
+      if config[required_field].blank? and config["#{required_field}_field"].blank?
+        config_errors[required_field] = "is required"
+      end
+    end
+    config_errors
+  end
+  
+  def self.config_error_messages(config)
+    config_errors(config).collect do |field, message|
+      "'#{field}' #{message}"
+    end.to_sentence
   end
 
   def valid?

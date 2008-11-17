@@ -4,8 +4,8 @@ describe "MailerTags" do
   scenario :mailer
   describe "<r:mailer>" do
     it "should render an error if the configuration is invalid" do
-       pages(:home).should render("<r:mailer>true</r:mailer>").as('Mailer config is not valid (see Mailer.valid_config?)')
-    end
+       pages(:home).should render("<r:mailer>true</r:mailer>").as("Mailer config is invalid: 'from' is required and 'recipients' is required")
+     end
 
     it "should render its contents if the configuration is valid" do
       pages(:mail_form).should render("<r:mailer>true</r:mailer>").as('true')

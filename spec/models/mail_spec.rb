@@ -11,21 +11,36 @@ describe Mail do
     ActionMailer::Base.deliveries = []
   end
 
-  it "should have an invalid config when recipients or from keys are absent" do
-    Mail.valid_config?('from' => 'foo@baz.com').should be_false
-    Mail.valid_config?('recipients' => 'foo@bar.com').should be_false
-  end
+  describe 'config validation' do
+    it "should have an invalid config when from is absent" do
+      Mail.valid_config?('recipients' => 'foo@bar.com').should be_false
+    end
 
-  it "should have a valid config when recipients and from keys are present" do
-    Mail.valid_config?('recipients' => 'foo@bar.com', 'from' => 'foo@baz.com').should be_true
-  end
+    it "should have an invalid config when recipients are absent" do
+      Mail.valid_config?('from' => 'foo@baz.com').should be_false
+    end
 
-  it "should have a valid config when recipients_field stands in for recipients" do
-    Mail.valid_config?('recipients_field' => 'to', 'from' => 'foo@baz.com').should be_true
-  end
+    it "should have a valid config when recipients and from keys are present" do
+      Mail.valid_config?('recipients' => 'foo@bar.com', 'from' => 'foo@baz.com').should be_true
+    end
 
-  it "should have a valid config when from_field stands in for from" do
-    Mail.valid_config?('recipients' => 'foo@bar.com', 'from_field' => 'from').should be_true
+    it "should have a valid config when recipients_field stands in for recipients" do
+      Mail.valid_config?('recipients_field' => 'to', 'from' => 'foo@baz.com').should be_true
+    end
+
+    it "should have a valid config when from_field stands in for from" do
+      Mail.valid_config?('recipients' => 'foo@bar.com', 'from_field' => 'from').should be_true
+    end
+  end
+  
+  describe 'config error messages' do
+    it 'should exist for from' do
+      Mail.config_error_messages('recipients' => 'foo@bar.com').should == "'from' is required"
+    end
+    
+    it 'should exist for recipients' do
+      Mail.config_error_messages('from' => 'foo@baz.com').should == "'recipients' is required"
+    end
   end
 
   it "should derive the from field from the configuration" do

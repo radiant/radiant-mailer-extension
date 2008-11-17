@@ -17,7 +17,7 @@ module MailerTags
     if Mail.valid_config?(config)
       tag.expand
     else
-      "Mailer config is not valid (see Mailer.valid_config?)"
+      "Mailer config is invalid: #{Mail.config_error_messages(config)}"
     end
   end
 
