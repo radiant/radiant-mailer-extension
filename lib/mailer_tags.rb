@@ -119,7 +119,7 @@ module MailerTags
   
   %w(submit image).each do |type|
     desc %{
-      Renders a #{type} input tag for a mailer form. The 'name' attribute is required.}
+      Renders a #{type} input tag for a mailer form.}
     tag "mailer:#{type}" do |tag|
       value = tag.attr['value'] || tag.attr['name']
       tag.attr.merge!("name" => "mailer-form-button")
