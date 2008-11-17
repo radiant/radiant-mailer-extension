@@ -109,14 +109,14 @@ module MailerTags
     end
   end
   
-  %w(submit image).each do |type|
-    desc %{
-      Renders a #{type} input tag for a mailer form.}
-    tag "mailer:#{type}" do |tag|
-      value = tag.attr['value'] || tag.attr['name']
-      tag.attr.merge!("name" => "mailer-form-button")
-      result = [%(<input onclick="showSubmitPlaceholder();" type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
-    end
+  desc %{
+    Renders a submit input tag for a mailer form. Specify a 'src' to
+    render as an image submit input tag.}
+  tag "mailer:submit" do |tag|
+    value = tag.attr['value'] || tag.attr['name']
+    tag.attr.merge!("name" => "mailer-form-button")
+    type = tag.attr['src'] ? 'image' : 'submit'
+    result = [%(<input onclick="showSubmitPlaceholder();" type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
   end
 
   desc %{
