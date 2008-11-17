@@ -88,14 +88,6 @@ describe "MailerTags" do
       pages(:mail_form).should render('<r:mailer:form />').as(
         %(<form action="/mail-form/" method="post" enctype="multipart/form-data" id="mailer"></form>
 <script type="text/javascript">
-  function disableSubmitButtons()
-  {
-    var buttons = document.getElementsByName("mailer[mailer-form-button]");
-    for( var idx = 0; idx < buttons.length; idx++ )
-    {
-      buttons[idx].disabled = true;
-    }
-  }
   function showSubmitPlaceholder()
   {
     var submitplaceholder = document.getElementById("submit-placeholder-part");
@@ -112,14 +104,6 @@ describe "MailerTags" do
       pages(:mail_form).should render('<r:mailer:form />').as(
         %(<form action="/pages/#{page_id(:mail_form)}/mail#mailer" method="post" enctype="multipart/form-data" id="mailer"></form>
 <script type="text/javascript">
-  function disableSubmitButtons()
-  {
-    var buttons = document.getElementsByName("mailer[mailer-form-button]");
-    for( var idx = 0; idx < buttons.length; idx++ )
-    {
-      buttons[idx].disabled = true;
-    }
-  }
   function showSubmitPlaceholder()
   {
     var submitplaceholder = document.getElementById("submit-placeholder-part");
@@ -187,22 +171,22 @@ describe "MailerTags" do
     describe "<r:mailer:#{type}>" do
       it "should render an input tag with the type #{type}" do
         pages(:mail_form).should render("<r:mailer:#{type} name='foo' />").as(
-          %Q{<input onclick="disableSubmitButtons(); showSubmitPlaceholder();" type="#{type}" value="foo" id="mailer-form-button" name="mailer[mailer-form-button]" />})
+          %Q{<input onclick="showSubmitPlaceholder();" type="#{type}" value="foo" id="mailer-form-button" name="mailer[mailer-form-button]" />})
       end
 
       it "should render permitted passed attributes as attributes of the input tag" do
         pages(:mail_form).should render("<r:mailer:#{type} name='foo' class='bar'/>").as(
-          %Q{<input onclick="disableSubmitButtons(); showSubmitPlaceholder();" type="#{type}" value="foo" class="bar" id="mailer-form-button" name="mailer[mailer-form-button]" />})
+          %Q{<input onclick="showSubmitPlaceholder();" type="#{type}" value="foo" class="bar" id="mailer-form-button" name="mailer[mailer-form-button]" />})
       end
 
       it "should render the specified value as the value attribute" do
         pages(:mail_form).should render("<r:mailer:#{type} name='foo' value='bar'/>").as(
-          %Q{<input onclick="disableSubmitButtons(); showSubmitPlaceholder();" type="#{type}" value="bar" id="mailer-form-button" name="mailer[mailer-form-button]" />})
+          %Q{<input onclick="showSubmitPlaceholder();" type="#{type}" value="bar" id="mailer-form-button" name="mailer[mailer-form-button]" />})
       end
 
       it "should not raise an error if the name attribute is not specified" do
         pages(:mail_form).should render("<r:mailer:#{type} />").as(
-          %Q{<input onclick="disableSubmitButtons(); showSubmitPlaceholder();" type="#{type}" value="" id="mailer-form-button" name="mailer[mailer-form-button]" />})
+          %Q{<input onclick="showSubmitPlaceholder();" type="#{type}" value="" id="mailer-form-button" name="mailer[mailer-form-button]" />})
       end
     end
   end

@@ -80,14 +80,6 @@ module MailerTags
     results << %(</form>)
     results << %(
 <script type="text/javascript">
-  function disableSubmitButtons()
-  {
-    var buttons = document.getElementsByName("mailer[mailer-form-button]");
-    for( var idx = 0; idx < buttons.length; idx++ )
-    {
-      buttons[idx].disabled = true;
-    }
-  }
   function showSubmitPlaceholder()
   {
     var submitplaceholder = document.getElementById("submit-placeholder-part");
@@ -123,7 +115,7 @@ module MailerTags
     tag "mailer:#{type}" do |tag|
       value = tag.attr['value'] || tag.attr['name']
       tag.attr.merge!("name" => "mailer-form-button")
-      result = [%(<input onclick="disableSubmitButtons(); showSubmitPlaceholder();" type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
+      result = [%(<input onclick="showSubmitPlaceholder();" type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
     end
   end
 
