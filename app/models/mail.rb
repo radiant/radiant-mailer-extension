@@ -37,9 +37,22 @@ class Mail
 
       if @required
         @required.each do |name, msg|
-          if data[name].blank?
-            errors[name] = ((msg.blank? || %w(1 true required).include?(msg)) ? "is required." : msg)
-            @valid = false
+          if "as_email" == msg
+            unless valid_email?(data[name])
+              errors[name] = "invalid email address."
+              @valid = false
+            end
+          elsif m = msg.match(/\/(.*)\//)
+            regex = Regexp.new(m[1])
+            unless data[name] =~ regex
+              errors[name] = "doesn't match regex (#{m[1]})"
+              @valid = false
+            end
+          else
+            if data[name].blank?
+              errors[name] = ((msg.blank? || %w(1 true required not_blank).include?(msg)) ? "is required." : msg)
+              @valid = false
+            end
           end
         end
       end
@@ -128,7 +141,7 @@ The following information was posted:
   protected
 
   def valid_email?(email)
-    (email.blank? ? true : email =~ /.@.+\../)
+    (email.blank? ? true : email =~ /^[^@]+@([^@.]+\.)[^@]+$/)
   end
   
   def is_required_field?(field_name)

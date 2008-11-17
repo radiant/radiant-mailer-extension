@@ -78,6 +78,25 @@ module MailerTags
     results << %(<form action="#{action}" method="post" enctype="multipart/form-data" #{mailer_attrs(tag)}>)
     results <<   tag.expand
     results << %(</form>)
+    results << %(
+<script type="text/javascript">
+  function disableSubmitButtons()
+  {
+    var buttons = document.getElementsByName("mailer[mailer-form-button]");
+    for( var idx = 0; idx < buttons.length; idx++ )
+    {
+      buttons[idx].disabled = true;
+    }
+  }
+  function showSubmitPlaceholder()
+  {
+    var submitplaceholder = document.getElementById("submit-placeholder-part");
+    if (submitplaceholder != null)
+    {
+      submitplaceholder.style.display="";
+    }
+  }
+</script>)
   end
 
   desc %{
@@ -87,7 +106,7 @@ module MailerTags
     tag.expand if tag.locals.page.last_mail && tag.locals.page.last_mail.sent?
   end
 
-  %w(text checkbox radio hidden file).each do |type|
+  %w(text password reset checkbox radio hidden file).each do |type|
     desc %{
       Renders a #{type} input tag for a mailer form. The 'name' attribute is required.}
     tag "mailer:#{type}" do |tag|
@@ -95,6 +114,28 @@ module MailerTags
       value = (prior_value(tag) || tag.attr['value'])
       result = [%(<input type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
       add_required(result, tag)
+    end
+  end
+  
+  %w(submit image).each do |type|
+    desc %{
+      Renders a #{type} input tag for a mailer form. The 'name' attribute is required.}
+    tag "mailer:#{type}" do |tag|
+      value = tag.attr['value'] || tag.attr['name']
+      tag.attr.merge!("name" => "mailer-form-button")
+      result = [%(<input onclick="disableSubmitButtons(); showSubmitPlaceholder();" type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
+    end
+  end
+
+  desc %{
+    Renders a hidden div containing the contents of the submit_placeholder page part. The
+    div will be shown when a user submits a mailer form.
+  }
+  tag "mailer:submit_placeholder" do |tag|
+    if part(:submit_placeholder)
+      results = %Q(<div id="submit-placeholder-part" style="display:none">)
+      results << render_part(:submit_placeholder)
+      results << %Q(</div>)
     end
   end
 
@@ -157,9 +198,13 @@ module MailerTags
     name = tag.attr['name']
     mail = tag.locals.page.last_mail
     if name
-      mail.data[name].is_a?(Array) ? mail.data[name].to_sentence :
-        mail.data[name].respond_to?(:original_filename) ? mail.data[name].original_filename :
+      if mail.data[name].is_a?(Array)
+        mail.data[name].map{ |d| d.respond_to?(:original_filename) ? d.original_filename : d.to_s }.to_sentence
+      elsif mail.data[name].respond_to?(:original_filename)
+        mail.data[name].original_filename
+      else
         mail.data[name]
+      end
     else
       mail.data.to_hash.to_yaml.to_s
     end

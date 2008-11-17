@@ -19,12 +19,18 @@ The following tags are available to help you build the form:
 
   <r:mailer:form name=""> ... </r:mailer:form> 
   <r:mailer:text name="" /> 
+  <r:mailer:password name="" /> 
+  <r:mailer:reset name="" /> 
   <r:mailer:checkbox name="" />
   <r:mailer:radio name="" />
+  <r:mailer:file name="" />
   <r:mailer:radiogroup name=""> ... </r:mailer:radiogroup>
   <r:mailer:select name=""> ... </r:mailer:select>
   <r:mailer:textarea name=""> ... </r:mailer:textarea>
   <r:mailer:option name="" />
+  <r:mailer:submit name="" />
+  <r:mailer:image name="" />
+  <r:mailer:submit_placeholder />
   <r:mailer:get name="" />
 
 Simple example of a form:
@@ -35,11 +41,87 @@ Simple example of a form:
    <r:mailer:text name="name" /> <br/>
     Message:<br/>
    <r:mailer:textarea name="message" /> <br/>
-   <input type="submit" value="Send" />
+   <r:mailer:submit name="Send" />
   </r:mailer:form>
 
+=== Required fields
 
-== User-provided Configuration
+You can specify fields which must be populated or the form will be invalid and will redisplay the page with an error informing the user to populate those fields.
+
+Simple example of a required field:
+
+  <r:mailer:form>
+   ...
+    Name:<br/>
+   <r:mailer:text name="name" required="true"/> <br/>
+   ...
+   <r:mailer:submit name="Send" />
+  </r:mailer:form>
+
+Simple example of a required field with user-defined message:
+
+  <r:mailer:form>
+   ...
+    Name:<br/>
+   <r:mailer:text name="name" required="should not be blank"/> <br/>
+   ...
+   <r:mailer:submit name="Send" />
+  </r:mailer:form>
+
+You can also specify fields which must be validated 'as_email' (i.e. a@b.com).
+
+Simple example of a required field with email address validation:
+
+  <r:mailer:form>
+   ...
+    Reply-To:<br/>
+   <r:mailer:text name="reply_email" required="as_email"/> <br/>
+   ...
+   <r:mailer:submit name="Send" />
+  </r:mailer:form>
+
+You can also specify fields which must be validated as defined regexp (i.e. /^\d{2}\.\d{2}\.\d{4}\$/ for date dd.mm.yyyy).
+
+
+Simple example of a required field with regexp validation:
+
+  <r:mailer:form>
+   ...
+    Birthday:<br/>
+   <r:mailer:text name="birthday" required="/^\d{2}\.\d{2}\.\d{4}\$/"/> <br/>
+   ...
+   <r:mailer:submit name="Send" />
+  </r:mailer:form>
+
+=== File attachments
+
+In many cases it is desirable to limit the maximum size of a file that may be uploaded. This is set as the max_filesize attribute for mailers in the mailer page part. Any file included in the form will have the limit imposed. Following is a simple example mailer part that includes a file size limit of 100,000 bytes:
+
+  subject: From the website of Whatever
+  from: noreply@mydomain.com
+  redirect_to: /contact/thank-you
+  max_filesize: 100000
+  recipients:
+    - one@one.com
+    - two@two.com
+
+The following is a simple form that might be used to submit a file for the above configuration:
+
+  <r:mailer:form name="contact">
+      Type your message: <r:mailer:text name="themessage" /> <br/>
+      Select a file: <r:mailer:file name="thefile" /> <br/>
+      <r:mailer:submit value="submit"/>
+  </r:mailer:form>
+
+If a user does not select a file the other form contents will still be e-mailed. The <r:mailer:get name="foo" /> (with <r:mailer:file name="foo" />) will provide the uploaded file name.
+
+If you are using email or email_html parts then the <r:mailer:get name="" /> tag can be used to retrieve the name of the uploaded file. If no file was uploaded "" will be returned.
+
+=== Submit placeholder
+
+If you wish to show show that activity is taking place during submission you may use the <r:mailer:submit_placeholder /> tag in your form. This will insert a hidden div with the contents of the submit_placeholder page part. The div will be displayed when the user clicks any submit button.
+
+=== User-provided Configuration
 
 Sometimes, rather than explicitly configuring the recipients and such in the mailer part, you'd rather have them passed in by the person submitting the form. Mailer supports this by allowing you to specify a form field to pull the value from:
 
@@ -48,7 +130,6 @@ Sometimes, rather than explicitly configuring the recipients and such in the mai
 Then you just have to add that field to your mailer form and you're all set.
 
 This is supported for the from (from_field), recipients (recipients_field) and reply_to (reply_to_field) properties.
-
 
 == Enabling action_mailer
 
