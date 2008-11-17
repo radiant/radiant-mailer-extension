@@ -146,6 +146,7 @@ to:
 
 Relative urls will almost certainly not work if the mailer fails validation. Solution? Only use absolute urls.
 
+Field validation is currently implemented via easily spoofable HTML attributes. Think of them of more like guidelines.
 
 == History
 
@@ -165,5 +166,4 @@ Seriously restructured by: Nathaniel Talbott - terralien.com
 
 == Todo
 
-* Support for file attachments to emails
 * Tests
