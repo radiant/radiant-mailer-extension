@@ -8,7 +8,7 @@ class MailController < ApplicationController
     page.request, page.response = request, response
 
     config, part_page = config_and_page(page)
-
+    
     mail = Mail.new(part_page, config, params[:mailer])
     page.last_mail = part_page.last_mail = mail
     process_mail(mail, config)
