@@ -117,8 +117,6 @@ module MailerTags
     @<r:mailer:select>...</r:mailer:select>@ tag, an @<input type="radio"/>@ tag if
     the parent is a @<r:mailer:radiogroup>...</r:mailer:radiogroup>@ }
   tag 'mailer:option' do |tag|
-    tag.attr['name'] = tag.locals.parent_tag_name
-
     value = (tag.attr['value'] || tag.expand)
     selected = (prior_value(tag, tag.locals.parent_tag_name) == value)
 
