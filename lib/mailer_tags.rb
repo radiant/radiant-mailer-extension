@@ -53,7 +53,7 @@ module MailerTags
     <pre><code>  <r:mailer:form>...</r:mailer:form></code></pre>}
   tag "mailer:form" do |tag|
     results = [%(<a name="mailer"></a>)]
-    results << %(<form action="/pages/#{tag.locals.page.id}/mail#mailer" method="post" #{mailer_attrs(tag)}">)
+    results << %(<form action="/pages/#{tag.locals.page.id}/mail#mailer" method="post" #{mailer_attrs(tag)}>)
     results <<   tag.expand
     results << %(</form>)
   end
