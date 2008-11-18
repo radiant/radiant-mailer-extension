@@ -1,42 +1,42 @@
 class Mail
   attr_reader :page, :config, :data, :errors
   def initialize(page, config, data)
-    @page, @config, @data = page, config, data
+    @page, @config, @data = page, config.with_indifferent_access, data
     @required = @data.delete(:required)
     @errors = {}
   end
-  
+
   def self.valid_config?(config)
     return false if config['recipients'].blank? and config['recipients_field'].blank?
     return false if config['from'].blank? and config['from_field'].blank?
     true
   end
-  
+
   def valid?
     unless defined?(@valid)
       @valid = true
-      if recipients.blank? and !@required.detect{|name,_| name == config['recipients_field']}
+      if recipients.blank? and !is_required_field?(config[:recipients_field])
         errors['form'] = 'Recipients are required.'
         @valid = false
       end
-      
+
       if recipients.any?{|e| !valid_email?(e)}
         errors['form'] = 'Recipients are invalid.'
         @valid = false
       end
-      
-      if from.blank? and !@required.detect{|name,_| name == config['from_field']}
+
+      if from.blank? and !is_required_field?(config[:from_field])
         errors['form'] = 'From is required.'
         @valid = false
       end
-      
+
       if !valid_email?(from)
         errors['form'] = 'From is invalid.'
         @valid = false
       end
-    
+
       if @required
-        @required.each do |name,msg|
+        @required.each do |name, msg|
           if data[name].blank?
             errors[name] = ((msg.blank? || %w(1 true required).include?(msg)) ? "is required." : msg)
             @valid = false
@@ -46,21 +46,29 @@ class Mail
     end
     @valid
   end
-  
+
   def from
     config[:from] || data[config[:from_field]]
   end
-  
+
   def recipients
     config[:recipients] || data[config[:recipients_field]].split(/,/).collect{|e| e.strip}
   end
-  
+
   def reply_to
     config[:reply_to] || data[config[:reply_to_field]]
   end
-  
+
   def sender
     config[:sender]
+  end
+
+  def subject
+    data[:subject] || config[:subject] || "Form Mail from #{page.request.host}"
+  end
+  
+  def cc
+    data[config[:cc_field]] || config[:cc] || ""
   end
   
   def send
@@ -77,7 +85,7 @@ The following information was posted:
 #{data.to_hash.to_yaml}
       EMAIL
     end
-    
+
     headers = { 'Reply-To' => reply_to }
     if sender
       headers['Return-Path'] = sender
@@ -87,17 +95,29 @@ The following information was posted:
     Mailer.deliver_generic_mail(
       :recipients => recipients,
       :from => from,
-      :subject => data[:subject] || config[:subject] || "Form Mail from #{page.request.host}",
+      :subject => subject,
       :plain_body => plain_body,
       :html_body => html_body,
-      :cc => data[config[:cc_field]] || config[:cc] || "",
+      :cc => cc,
       :headers => headers
     )
+    @sent = true
+  rescue Exception => e
+    errors['base'] = e.message
+    @sent = false
   end
-  
+
+  def sent?
+    @sent
+  end
+
   protected
-  
+
   def valid_email?(email)
     (email.blank? ? true : email =~ /.@.+\../)
+  end
+  
+  def is_required_field?(field_name)
+    @required && @required.any? {|name,_| name == field_name}
   end
 end

@@ -6,6 +6,7 @@ class Mailer < ActionMailer::Base
     @bcc = options[:bcc] || ""
     @subject = options[:subject] || ""
     @headers = options[:headers] || {}
+    # Not sure that charset works, can see no effect in tests
     @charset = options[:charset] || "utf-8"
     @content_type = "multipart/alternative"
     if options.has_key? :plain_body

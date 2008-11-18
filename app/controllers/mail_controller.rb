@@ -4,19 +4,19 @@ class MailController < ApplicationController
   skip_before_filter :verify_authenticity_token  
 
   def create
-    page = Page.find(params[:page_id])
-    page.request, page.response = request, response
+    @page = Page.find(params[:page_id])
+    @page.request, @page.response = request, response
 
-    config, part_page = config_and_page(page)
-    
+    config, part_page = config_and_page(@page)
+
     mail = Mail.new(part_page, config, params[:mailer])
-    page.last_mail = part_page.last_mail = mail
+    @page.last_mail = part_page.last_mail = mail
     process_mail(mail, config)
 
     if mail.send
-      redirect_to (config[:redirect_to] || "#{page.url}#mail_sent")
+      redirect_to (config[:redirect_to] || "#{@page.url}#mail_sent")
     else
-      render :text => page.render
+      render :text => @page.render
     end
   end
   
