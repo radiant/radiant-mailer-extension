@@ -122,7 +122,7 @@ module MailerTags
     add_required(result, tag)
   end
 
-  %{
+  desc %{
     Renders a series of @<input type="radio" .../>@ tags for a mailer form.  The 'name' attribute is required.
     Nested @<r:option />@ tags will generate individual radio buttons with corresponding values. }
   tag 'mailer:radiogroup' do |tag|
@@ -151,39 +151,43 @@ module MailerTags
     end
   end
   
-  desc "
-    Provides a mechanism to iterate over array datum submitted via a mailer form.  
-     Used in the 'email', 'email_html', and 'mailer' parts to generate the resulting email.
-     May work OK nested, but this hasn't been tested."
+  desc %{
+    Provides a mechanism to iterate over array datum submitted via a 
+    mailer form. Used in the 'email', 'email_html', and 'mailer' parts to 
+    generate the resulting email. May work OK nested, but this hasn't been 
+    tested.
+  }
   tag 'mailer:get_each' do |tag|
     name = tag.attr['name']
     mail = tag.locals.page.last_mail
     if tag.locals.mailer_element then
-    	ary=tag.locals.mailer_element
+      ary=tag.locals.mailer_element
     else
-	    ary=mail.data[name]
-	  end
+      ary=mail.data[name]
+    end
     result=[]
     return '' if ary.blank?
 
     case ary
-    	when Array
-		    ary.each_with_index do |element, idx|
-		    	tag.locals.mailer_key=idx
-	  		  tag.locals.mailer_element = element
-  			  result << tag.expand
-  			end
-  		else
-  			ary.each do |key, element|
-  				tag.locals.mailer_key=key
-  				tag.locals.mailer_element = element
-  			  result << tag.expand
-  			end
-  	end
-	  result
-	end
-	
-  desc %{ Uses @ActionView::Helpers::DateHelper.date_select@ to render three select tags for date selection. }
+      when Array
+        ary.each_with_index do |element, idx|
+          tag.locals.mailer_key=idx
+          tag.locals.mailer_element = element
+          result << tag.expand
+        end
+      else
+        ary.each do |key, element|
+          tag.locals.mailer_key=key
+          tag.locals.mailer_element = element
+          result << tag.expand
+        end
+    end
+    result
+  end
+  
+  desc %{ 
+    Uses @ActionView::Helpers::DateHelper.date_select@ to render three select tags for date selection. 
+  }
   tag 'mailer:date_select' do |tag|
     raise_error_if_name_missing "mailer:date_select", tag.attr
     name = tag.attr.delete('name')
@@ -208,14 +212,16 @@ module MailerTags
   end
 
   desc %{
-    Renders the value of a datum submitted via a mailer form.  Used in the 'email', 'email_html', and
-    'mailer' parts to generate the resulting email.
-    When used within mailer:get_each it defaults to getting elements within that array. }
+    Renders the value of a datum submitted via a mailer form.  Used in the 
+    'email', 'email_html', and 'mailer' parts to generate the resulting email.
+    When used within mailer:get_each it defaults to getting elements within 
+    that array. 
+  }
   tag 'mailer:get' do |tag|
     name = tag.attr['name']
     mail = tag.locals.page.last_mail
     if tag.locals.mailer_element then
-    	element = tag.locals.mailer_element
+      element = tag.locals.mailer_element
     else
       element = tag.locals.page.last_mail.data
     end
@@ -227,15 +233,17 @@ module MailerTags
   end
     
   desc %{
-    For use within a mailer:get_each to output the index/key for each element of the
-    hash. }
+    For use within a mailer:get_each to output the index/key for each element 
+    of the hash. 
+  }
   tag 'mailer:index' do |tag|
     tag.locals.mailer_key || nil
   end
 
   desc %{
-    Renders the contained block if a named datum was submitted via a mailer form.  Used in the 'email', 'email_html' and 'mailer' parts
-    to generate the resulting email.
+    Renders the contained block if a named datum was submitted via a mailer 
+    form.  Used in the 'email', 'email_html' and 'mailer' parts to generate 
+    the resulting email.
   }
   tag 'mailer:if_value' do |tag|
     name = tag.attr['name']
