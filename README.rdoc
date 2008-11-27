@@ -23,6 +23,7 @@ The following tags are available to help you build the form:
   <r:mailer:radio name="" />
   <r:mailer:radiogroup name=""> ... </r:mailer:radiogroup>
   <r:mailer:select name=""> ... </r:mailer:select>
+  <r:mailer:date_select name=""/>
   <r:mailer:textarea name=""> ... </r:mailer:textarea>
   <r:mailer:option name="" />
 

@@ -176,6 +176,40 @@ describe "MailerTags" do
       pages(:mail_form).should render("<r:mailer:select name='foo' required='true'/>").as(%Q{<select size="1" id="foo" name="mailer[foo]"></select><input type="hidden" name="mailer[required][foo]" value="true" />})
     end
   end
+  
+  describe "<r:mailer:date_select>" do
+    # HACK: Quick way to get a tag rendered to string in the context of a page.
+    # How can this be made better?
+    def render_tag_in_mailer(content)
+      tag = Spec::Rails::Matchers::RenderTags.new
+      tag.send(:render_content_with_page, content, pages(:mail_form))
+    end
+    
+    it "should render select tags for each date component" do
+      date_select = render_tag_in_mailer('<r:mailer:date_select name="foo" />')
+      date_select.should have_tag('select[name=?]', "mailer[foo(1i)]")
+      date_select.should have_tag('select[name=?]', "mailer[foo(2i)]")
+      date_select.should have_tag('select[name=?]', "mailer[foo(3i)]")
+    end
+    
+    it "should include blank options" do
+      date_select = render_tag_in_mailer('<r:mailer:date_select name="foo" include_blank="true" />')
+      date_select.should have_tag('select[name=?]', "mailer[foo(1i)]") do
+        with_tag('option[value=?]', '')
+      end
+      date_select.should have_tag('select[name=?]', "mailer[foo(2i)]") do
+        with_tag('option[value=?]', '')
+      end
+      date_select.should have_tag('select[name=?]', "mailer[foo(3i)]") do
+        with_tag('option[value=?]', '')
+      end
+    end
+    
+    it "should order select tags" do
+      date_select = render_tag_in_mailer('<r:mailer:date_select name="foo" order="day,year,month" />')
+      date_select.should have_tag('select[name=?]+select[name=?]+select[name=?]','mailer[foo(3i)]', 'mailer[foo(1i)]', 'mailer[foo(2i)]')
+    end
+  end
 
   describe "<r:mailer:textarea>" do
     it "should render a textarea tag" do
@@ -235,6 +269,11 @@ describe "MailerTags" do
     
     it "should render nothing when the value is not present" do
       @page.should render('<r:mailer:get name="body" />').as('')
+    end
+    
+    it "should render date when date params are detected" do
+      @page.last_mail = @mail = Mail.new(@page, @page.config, 'foo(1i)' => '2008', 'foo(2i)' => '10', 'foo(3i)' => '29')
+      @page.should render('<r:mailer:get name="foo" />').as('2008-10-29')
     end
   end
   

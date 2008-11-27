@@ -1,5 +1,6 @@
 module MailerTags
   include Radiant::Taggable
+  include ActionView::Helpers::DateHelper
 
   def config
     @config ||= begin
@@ -180,6 +181,30 @@ module MailerTags
   			end
   	end
 	  result
+	end
+	
+  desc %{ Uses @ActionView::Helpers::DateHelper.date_select@ to render three select tags for date selection. }
+  tag 'mailer:date_select' do |tag|
+    raise_error_if_name_missing "mailer:date_select", tag.attr
+    name = tag.attr.delete('name')
+    
+    options = {}
+    
+    tag.attr.each do |k, v|
+      if v =~ /(true|false)/
+        options[k] = (v == 'true')
+      elsif v =~ /\d+/
+        options[k] = v.to_i
+      elsif k == 'order'
+        options[k] = v.split(',').map(&:strip).map(&:to_sym)
+      else
+        options[k] = v
+      end
+    end
+    
+    options.symbolize_keys!
+    
+    date_select('mailer', name, options)
   end
 
   desc %{
@@ -195,7 +220,7 @@ module MailerTags
       element = tag.locals.page.last_mail.data
     end
     if name
-      element[name].is_a?(Array) ? element[name].to_sentence : element[name]
+      format_mailer_data(element, name)
     else
       element.to_hash.to_yaml.to_s
     end
@@ -217,6 +242,28 @@ module MailerTags
     eq = tag.attr['equals']
     mail = tag.locals.page.last_mail || tag.globals.page.last_mail
     tag.expand if name && mail.data[name] && (eq.blank? || eq == mail.data[name])
+  end
+  
+  def format_mailer_data(element, name)
+    data = element[name]
+    if Array === data
+      data.to_sentence
+    elsif date = detect_date(element, name)
+      date
+    else
+      data
+    end
+  end
+  
+  def detect_date(mail, name)
+    date_components = mail.select { |key, value| key =~ Regexp.new("#{name}\\(\\di\\)") }
+    
+    if date_components.length == 3
+      date_values = date_components.sort { |a, b| a[0] <=> b[0] }.map { |v| v[1].to_i }
+      return Date.new(*date_values)
+    else
+      return nil
+    end
   end
 
   def prior_value(tag, tag_name=tag.attr['name'])
