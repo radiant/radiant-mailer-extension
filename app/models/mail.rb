@@ -74,8 +74,6 @@ class Mail
   def send
     return false if not valid?
 
-    reply_to = reply_to || from
-
     plain_body = (page.part( :email ) ? page.render_part( :email ) : page.render_part( :email_plain ))
     html_body = page.render_part( :email_html ) || nil
 
@@ -86,7 +84,7 @@ The following information was posted:
       EMAIL
     end
 
-    headers = { 'Reply-To' => reply_to }
+    headers = { 'Reply-To' => reply_to || from }
     if sender
       headers['Return-Path'] = sender
       headers['Sender'] = sender
