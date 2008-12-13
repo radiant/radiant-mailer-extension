@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe "MailerTags" do
-  scenario :mailer
+  dataset :mailer
   describe "<r:mailer>" do
     it "should render an error if the configuration is invalid" do
        pages(:home).should render("<r:mailer>true</r:mailer>").as('Mailer config is not valid (see Mailer.valid_config?)')

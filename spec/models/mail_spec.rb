@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe Mail do
-  scenario :mailer
+  dataset :mailer
 
   before :each do
     @page = pages(:mail_form)

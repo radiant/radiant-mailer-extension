@@ -1,4 +1,4 @@
-class MailerScenario < Scenario::Base
+class MailerDataset < Dataset::Base
   uses :pages
 
   def load
