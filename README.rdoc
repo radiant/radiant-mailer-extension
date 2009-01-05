@@ -50,6 +50,11 @@ to:
   config.frameworks -= []
 
 
+== Updating from the older mailer extension
+
+If you get this error "The single-table inheritance mechanism failed to locate the subclass: 'MailerPage'.", run 'rake:radiant:extensions:mailer:migrate'. This will change all pages with a MailerPage classname into regular pages.
+Second, your 'config' page part has to be renamed to 'mailer', and the first two YAML levels should be deleted (see instructions above).
+
 == Caveats
 
 Relative urls will almost certainly not work if the mailer fails validation. Solution? Only use absolute urls.
