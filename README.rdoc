@@ -69,9 +69,11 @@ to:
 
 == Updating from the older mailer extension
 
-  If you get this error "The single-table inheritance mechanism failed to locate the subclass: 'MailerPage'.", run 'rake:radiant:extensions:mailer:migrate'. This will change all pages with a MailerPage classname into regular pages.
+If you get this error "The single-table inheritance mechanism failed to locate the subclass: 'MailerPage'.", run 'rake:radiant:extensions:mailer:migrate'. This will change all pages with a MailerPage classname into regular pages.
   Second, your 'config' page part has to be renamed to 'mailer', and the first two YAML levels should be deleted (see instructions above).
 
+If you are getting a stack level too deep error, it may be caused by using <r:mailer:get /> in your 'mailer' part.
+Use the from_field or other options to get to the email adress that was posted (see User-provided configuration).
 
 == Caveats
 
