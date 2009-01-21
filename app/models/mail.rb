@@ -73,9 +73,9 @@ class Mail
   
   def send
     return false if not valid?
-
+    
     reply_to = reply_to || from
-
+    
     plain_body = (page.part( :email ) ? page.render_part( :email ) : page.render_part( :email_plain ))
     html_body = page.render_part( :email_html ) || nil
 
