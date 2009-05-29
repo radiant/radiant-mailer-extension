@@ -4,6 +4,7 @@ class MailerDataset < Dataset::Base
   def load
     create_page "Mail form" do
       create_page_part "mailer", :content => {'recipients' => 'foo@bar.com', 'from' => 'baz@noreply.com'}.to_yaml
+      create_page_part "submit_placeholder", :content => "sending email..."
     end
     create_page "Plain mail" do
       create_page_part "plain_mailer", :content => {'recipients' => 'foo@bar.com', 'from' => 'baz@noreply.com'}.to_yaml, :name => "mailer"
