@@ -178,7 +178,7 @@ module MailerTags
     selected = prev_value ? prev_value == value : checked
 
     if tag.locals.parent_tag_type == 'select'
-      %(<option value="#{value}"#{%( selected="selected") if selected} #{mailer_attrs(tag)}>#{tag.expand}</option>)
+      %(<option value="#{value}"#{%( selected="selected") if selected} #{mailer_attrs(tag)}>#{value}</option>)
     elsif tag.locals.parent_tag_type == 'radiogroup'
       %(<input type="radio" value="#{value}"#{%( checked="checked") if selected} #{mailer_attrs(tag)} />)
     end
