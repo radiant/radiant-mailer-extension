@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe Mail do
-  scenario :mailer
+  dataset :mailer
 
   before :each do
     @page = pages(:mail_form)
@@ -148,6 +148,24 @@ describe Mail do
     @mail.should be_valid
     @mail.send.should be_false
     @mail.errors['base'].should == "Boom!"
+  end
+  
+  it "should set the Reply-To header on the sent mail to the reply_to value given in the configuration" do
+    @mail.config[:reply_to] = "reply_to@example.com"
+    @mail.send
+    ActionMailer::Base.deliveries.last.reply_to.should == [@mail.config[:reply_to]] # reply_to on TMail is an Array
+  end
+
+  it "should set the Reply-To header on the sent mail to the reply_to_field data value given in the configuration" do
+    @mail.config[:reply_to_field] = 'email'
+    @mail.data['email'] = 'reply_to_field@example.com'
+    @mail.send
+    ActionMailer::Base.deliveries.last.reply_to.should == [@mail.data['email']] # reply_to on TMail is an Array
+  end
+
+  it "should set the Reply-To header on the sent mail to the from value when the configuration does not specify a reply_to" do
+    @mail.send
+    ActionMailer::Base.deliveries.last.reply_to.should == ['foo@baz.com'] # reply_to on TMail is an Array
   end
 
   describe "when the page has no email body specified" do

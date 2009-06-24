@@ -26,7 +26,13 @@ The following tags are available to help you build the form:
   <r:mailer:date_select name=""/>
   <r:mailer:textarea name=""> ... </r:mailer:textarea>
   <r:mailer:option name="" />
+
+When processing the form (in email and email_html), the following tags are 
+available:
+
   <r:mailer:get name="" />
+  <r:mailer:get_each name=""> ... </r:mailer:get_each>
+    <r:mailer:index />
 
 Simple example of a form:
 
