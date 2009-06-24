@@ -250,16 +250,21 @@ module MailerTags
     When used within mailer:get_each it defaults to getting elements within 
     that array. 
   }
-  
-  tag 'mailer:get' do |tag|
-    name = tag.attr['name']
-    mail = tag.locals.page.last_mail
-    if name
-      format_mailer_data(mail, name)
-    else
-      mail.data.to_hash.to_yaml.to_s
-    end
-  end
+  # 
+  # tag 'mailer:get' do |tag|
+  #   name = tag.attr['name']
+  #   mail = tag.locals.page.last_mail
+  #   if tag.locals.mailer_element then
+  #     element = tag.locals.mailer_element
+  #   else
+  #     element = tag.locals.page.last_mail.data
+  #   end
+  #   if name
+  #     format_mailer_data(element, name)
+  #   else
+  #     element.to_hash.to_yaml.to_s
+  #   end
+  # end
   
   tag 'mailer:get' do |tag|
     name = tag.attr['name']
@@ -275,7 +280,7 @@ module MailerTags
       elsif mail.data[name].respond_to?(:original_filename)
         mail.data[name].original_filename
       else
-        mail.data[name]
+        format_mailer_data(element, name)
       end
     else
       element.to_hash.to_yaml.to_s
