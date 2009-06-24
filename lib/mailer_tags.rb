@@ -18,7 +18,7 @@ module MailerTags
     if Mail.valid_config?(config)
       tag.expand
     else
-      "Mailer config is not valid (see Mailer.valid_config?)"
+      "Mailer config is invalid: #{Mail.config_error_messages(config)}"
     end
   end
 
@@ -76,9 +76,20 @@ module MailerTags
     tag.attr['id'] ||= 'mailer'
     results = []
     action = Radiant::Config['mailer.post_to_page?'] ? tag.locals.page.url : "/pages/#{tag.locals.page.id}/mail##{tag.attr['id']}"
-    results << %(<form action="#{action}" method="post" #{mailer_attrs(tag)}>)
+    results << %(<form action="#{action}" method="post" enctype="multipart/form-data" #{mailer_attrs(tag)}>)
     results <<   tag.expand
     results << %(</form>)
+    results << %(
+<script type="text/javascript">
+  function showSubmitPlaceholder()
+  {
+    var submitplaceholder = document.getElementById("submit-placeholder-part");
+    if (submitplaceholder != null)
+    {
+      submitplaceholder.style.display="";
+    }
+  }
+</script>)
   end
 
   desc %{
@@ -88,7 +99,7 @@ module MailerTags
     tag.expand if tag.locals.page.last_mail && tag.locals.page.last_mail.sent?
   end
 
-  %w(text checkbox radio hidden).each do |type|
+  %w(text password reset checkbox radio hidden file).each do |type|
     desc %{
       Renders a #{type} input tag for a mailer form. The 'name' attribute is required.}
     tag "mailer:#{type}" do |tag|
@@ -96,6 +107,28 @@ module MailerTags
       value = (prior_value(tag) || tag.attr['value'])
       result = [%(<input type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
       add_required(result, tag)
+    end
+  end
+  
+  desc %{
+    Renders a submit input tag for a mailer form. Specify a 'src' to
+    render as an image submit input tag.}
+  tag "mailer:submit" do |tag|
+    value = tag.attr['value'] || tag.attr['name']
+    tag.attr.merge!("name" => "mailer-form-button")
+    type = tag.attr['src'] ? 'image' : 'submit'
+    result = [%(<input onclick="showSubmitPlaceholder();" type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
+  end
+
+  desc %{
+    Renders a hidden div containing the contents of the submit_placeholder page part. The
+    div will be shown when a user submits a mailer form.
+  }
+  tag "mailer:submit_placeholder" do |tag|
+    if part(:submit_placeholder)
+      results = %Q(<div id="submit-placeholder-part" style="display:none">)
+      results << render_part(:submit_placeholder)
+      results << %Q(</div>)
     end
   end
 
@@ -145,7 +178,7 @@ module MailerTags
     selected = prev_value ? prev_value == value : checked
 
     if tag.locals.parent_tag_type == 'select'
-      %(<option value="#{value}"#{%( selected="selected") if selected} #{mailer_attrs(tag)}>#{tag.expand}</option>)
+      %(<option value="#{value}"#{%( selected="selected") if selected} #{mailer_attrs(tag)}>#{value}</option>)
     elsif tag.locals.parent_tag_type == 'radiogroup'
       %(<input type="radio" value="#{value}"#{%( checked="checked") if selected} #{mailer_attrs(tag)} />)
     end
@@ -237,7 +270,13 @@ module MailerTags
       element = tag.locals.page.last_mail.data
     end
     if name
-      format_mailer_data(element, name)
+      if mail.data[name].is_a?(Array)
+        mail.data[name].map{ |d| d.respond_to?(:original_filename) ? d.original_filename : d.to_s }.to_sentence
+      elsif mail.data[name].respond_to?(:original_filename)
+        mail.data[name].original_filename
+      else
+        mail.data[name]
+      end
     else
       element.to_hash.to_yaml.to_s
     end
@@ -287,7 +326,8 @@ module MailerTags
 
   def prior_value(tag, tag_name=tag.attr['name'])
     if mail = tag.locals.page.last_mail
-      mail.data[tag_name]
+      mail.data[tag_name] unless StringIO === mail.data[tag_name] or
+        Tempfile === mail.data[tag_name]
     else
       nil
     end

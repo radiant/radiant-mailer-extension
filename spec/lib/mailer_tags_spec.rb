@@ -4,8 +4,8 @@ describe "MailerTags" do
   dataset :mailer
   describe "<r:mailer>" do
     it "should render an error if the configuration is invalid" do
-       pages(:home).should render("<r:mailer>true</r:mailer>").as('Mailer config is not valid (see Mailer.valid_config?)')
-    end
+       pages(:home).should render("<r:mailer>true</r:mailer>").as("Mailer config is invalid: 'from' is required and 'recipients' is required")
+     end
 
     it "should render its contents if the configuration is valid" do
       pages(:mail_form).should render("<r:mailer>true</r:mailer>").as('true')
@@ -85,12 +85,34 @@ describe "MailerTags" do
   describe "<r:mailer:form>" do
     it "should render a form that posts back to the page when mailer.post_to_page? is true" do
       Radiant::Config['mailer.post_to_page?'] = true
-      pages(:mail_form).should render('<r:mailer:form />').as('<form action="/mail-form/" method="post" id="mailer"></form>')
+      pages(:mail_form).should render('<r:mailer:form />').as(
+        %(<form action="/mail-form/" method="post" enctype="multipart/form-data" id="mailer"></form>
+<script type="text/javascript">
+  function showSubmitPlaceholder()
+  {
+    var submitplaceholder = document.getElementById("submit-placeholder-part");
+    if (submitplaceholder != null)
+    {
+      submitplaceholder.style.display="";
+    }
+  }
+</script>))
     end
 
     it "should render a form that posts back to the controller when mailer.post_to_page? is false" do
       Radiant::Config['mailer.post_to_page?'] = false
-      pages(:mail_form).should render('<r:mailer:form />').as(%Q{<form action="/pages/#{page_id(:mail_form)}/mail#mailer" method="post" id="mailer"></form>})
+      pages(:mail_form).should render('<r:mailer:form />').as(
+        %(<form action="/pages/#{page_id(:mail_form)}/mail#mailer" method="post" enctype="multipart/form-data" id="mailer"></form>
+<script type="text/javascript">
+  function showSubmitPlaceholder()
+  {
+    var submitplaceholder = document.getElementById("submit-placeholder-part");
+    if (submitplaceholder != null)
+    {
+      submitplaceholder.style.display="";
+    }
+  }
+</script>))
     end
 
     it "should render permitted passed attributes as attributes of the form tag" do
@@ -115,7 +137,7 @@ describe "MailerTags" do
     end
   end
 
-  %w(text checkbox radio hidden).each do |type|
+  %w(text password checkbox radio hidden file).each do |type|
     describe "<r:mailer:#{type}>" do
       it "should render an input tag with the type #{type}" do
         pages(:mail_form).should render("<r:mailer:#{type} name='foo' />").as(%Q{<input type="#{type}" value="" id="foo" name="mailer[foo]" />})
@@ -142,6 +164,60 @@ describe "MailerTags" do
       it "should raise an error if the name attribute is not specified" do
         pages(:mail_form).should render("<r:mailer:#{type} />").with_error("`mailer:#{type}' tag requires a `name' attribute")
       end
+    end
+  end
+
+  describe "<r:mailer:submit>" do
+    it "should render an input tag with the type submit" do
+      pages(:mail_form).should render("<r:mailer:submit name='foo' />").as(
+        %Q{<input onclick="showSubmitPlaceholder();" type="submit" value="foo" id="mailer-form-button" name="mailer[mailer-form-button]" />})
+    end
+
+    it "should render an input tag with the type image if src supplied" do
+      pages(:mail_form).should render("<r:mailer:submit src='/img.jpg' />").as(
+        %Q{<input onclick="showSubmitPlaceholder();" type="image" src="/img.jpg" value="foo" id="mailer-form-button" name="mailer[mailer-form-button]" />})
+    end
+
+    it "should render permitted passed attributes as attributes of the input tag" do
+      pages(:mail_form).should render("<r:mailer:submit name='foo' class='bar'/>").as(
+        %Q{<input onclick="showSubmitPlaceholder();" type="submit" value="foo" class="bar" id="mailer-form-button" name="mailer[mailer-form-button]" />})
+    end
+
+    it "should render the specified value as the value attribute" do
+      pages(:mail_form).should render("<r:mailer:submit name='foo' value='bar'/>").as(
+        %Q{<input onclick="showSubmitPlaceholder();" type="submit" value="bar" id="mailer-form-button" name="mailer[mailer-form-button]" />})
+    end
+
+    it "should not raise an error if the name attribute is not specified" do
+      pages(:mail_form).should render("<r:mailer:submit />").as(
+        %Q{<input onclick="showSubmitPlaceholder();" type="submit" value="" id="mailer-form-button" name="mailer[mailer-form-button]" />})
+    end
+  end
+  
+  describe "<r:mailer:reset>" do
+    it "should render the specified value as the value attribute" do
+      pages(:mail_form).should render("<r:mailer:reset value='bar'/>").as(
+        %Q{<input type="submit" value="bar" name="mailer[mailer-reset-button]" />})
+    end
+    
+    it "should render permitted passed attributes as attributes of the input tag" do
+      pages(:mail_form).should render("<r:mailer:reset class='bar'/>").as(
+        %Q{<input type="submit" value="reset" name="mailer[mailer-reset-button]" />})
+    end
+    
+    it "should not raise an error if the name attribute is not specified" do
+      pages(:mail_form).should render("<r:mailer:reset />").as(
+        %Q{<input type="reset" value="reset" name="mailer[mailer-reset-button]" />})
+    end
+  end
+  
+  describe "<r:mailer:submit_placeholder>" do
+    it "should render an placeholder div if submit_placeholder esists" do
+      pages(:mail_form).should render("<r:mailer:submit_placeholder />").as(
+        %Q{<div id="submit-placeholder-part" style="display:none">sending email...</div>})
+    end
+    it "should render nothing if submit_placeholder doesn't esist" do
+      pages(:plain_mail).should render("<r:mailer:submit_placeholder />").as("")
     end
   end
 
@@ -305,6 +381,31 @@ describe "MailerTags" do
     
     it "should provide mailer:index" do
       @page.should render('<r:mailer:get_each name="products"><r:mailer:index /><r:mailer:get name="name" /></r:mailer:get_each>').as('0foo1bar')
+    end
+
+    describe 'if responds to original_filename' do
+      it "should render it for single files" do
+        file = mock(StringIO, :original_filename => "readme.txt")
+        @page.last_mail = @mail = Mail.new(@page, @page.config, 'file' => file)
+        @page.should render('<r:mailer:get name="file" />').as('readme.txt')
+      end
+
+      # It is valid to have 2 files on a single input name
+      it "should render them as sentence for 2 files" do
+        file = mock(StringIO, :original_filename => "readme.txt")
+        file2 = mock(StringIO, :original_filename => "install.txt")
+        @page.last_mail = @mail = Mail.new(@page, @page.config, 'file' => [file, file2])
+        @page.should render('<r:mailer:get name="file" />').as('readme.txt and install.txt')
+      end
+
+      # It is valid to have multiple files on a single input name
+      it "should render them as sentence for multiple files" do
+        file = mock(StringIO, :original_filename => "readme.txt")
+        file2 = mock(StringIO, :original_filename => "install.txt")
+        file3 = mock(StringIO, :original_filename => "rakefile")
+        @page.last_mail = @mail = Mail.new(@page, @page.config, 'file' => [file, file2, file3])
+        @page.should render('<r:mailer:get name="file" />').as('readme.txt, install.txt, and rakefile')
+      end
     end
   end
   
