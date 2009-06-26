@@ -1,15 +1,14 @@
 class Mailer < ActionMailer::Base
   def generic_mail(options)
-    @recipients = options[:recipients]
-    @from = options[:from] || ""
-    @cc = options[:cc] || ""
-    @bcc = options[:bcc] || ""
-    @subject = options[:subject] || ""
-    @headers = options[:headers] || {}
-
-    # Not sure that charset works, can see no effect in tests
-    @charset = options[:charset] || "utf-8"
-    @content_type = "multipart/mixed"
+    recipients    options[:recipients]
+    from          options[:from] || ""
+    cc            options[:cc] || ""
+    bcc           options[:bcc] || ""
+    subject       options[:subject] || ""
+    headers       options[:headers] || {}
+    content_type  "multipart/mixed"
+    charset       options[:charset] || "utf-8"
+    
     if options.has_key? :plain_body
       part :content_type => "text/plain", :body => (options[:plain_body] || "")
     end

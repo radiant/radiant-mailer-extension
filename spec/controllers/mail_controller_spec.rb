@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe MailController do
-  dataset :mailer
+  dataset :mailer_page
   describe "POST to /pages/:id/mail" do
     before :each do
       @page = pages(:mail_form)

@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe "MailerTags" do
-  dataset :mailer
+  dataset :mailer_page
   describe "<r:mailer>" do
     it "should render an error if the configuration is invalid" do
        pages(:home).should render("<r:mailer>true</r:mailer>").as("Mailer config is invalid: 'from' is required and 'recipients' is required")
@@ -137,7 +137,7 @@ describe "MailerTags" do
     end
   end
 
-  %w(text password checkbox radio hidden file).each do |type|
+  %w(text password checkbox radio hidden file reset).each do |type|
     describe "<r:mailer:#{type}>" do
       it "should render an input tag with the type #{type}" do
         pages(:mail_form).should render("<r:mailer:#{type} name='foo' />").as(%Q{<input type="#{type}" value="" id="foo" name="mailer[foo]" />})
@@ -174,7 +174,7 @@ describe "MailerTags" do
     end
 
     it "should render an input tag with the type image if src supplied" do
-      pages(:mail_form).should render("<r:mailer:submit src='/img.jpg' />").as(
+      pages(:mail_form).should render("<r:mailer:submit src='/img.jpg' value='foo' />").as(
         %Q{<input onclick="showSubmitPlaceholder();" type="image" src="/img.jpg" value="foo" id="mailer-form-button" name="mailer[mailer-form-button]" />})
     end
 
@@ -191,23 +191,6 @@ describe "MailerTags" do
     it "should not raise an error if the name attribute is not specified" do
       pages(:mail_form).should render("<r:mailer:submit />").as(
         %Q{<input onclick="showSubmitPlaceholder();" type="submit" value="" id="mailer-form-button" name="mailer[mailer-form-button]" />})
-    end
-  end
-  
-  describe "<r:mailer:reset>" do
-    it "should render the specified value as the value attribute" do
-      pages(:mail_form).should render("<r:mailer:reset value='bar'/>").as(
-        %Q{<input type="submit" value="bar" name="mailer[mailer-reset-button]" />})
-    end
-    
-    it "should render permitted passed attributes as attributes of the input tag" do
-      pages(:mail_form).should render("<r:mailer:reset class='bar'/>").as(
-        %Q{<input type="submit" value="reset" name="mailer[mailer-reset-button]" />})
-    end
-    
-    it "should not raise an error if the name attribute is not specified" do
-      pages(:mail_form).should render("<r:mailer:reset />").as(
-        %Q{<input type="reset" value="reset" name="mailer[mailer-reset-button]" />})
     end
   end
   
@@ -253,13 +236,13 @@ describe "MailerTags" do
     end
   end
   
-  describe "<r:mailer:date_select>" do
+  describe "<r:mailer:date_select>" do    
     # HACK: Quick way to get a tag rendered to string in the context of a page.
     # How can this be made better?
     def render_tag_in_mailer(content)
       tag = Spec::Rails::Matchers::RenderTags.new
       tag.send(:render_content_with_page, content, pages(:mail_form))
-    end
+    end    
     
     it "should render select tags for each date component" do
       date_select = render_tag_in_mailer('<r:mailer:date_select name="foo" />')

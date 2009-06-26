@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe Mail do
-  dataset :mailer
+  dataset :mailer_page
 
   before :each do
     @page = pages(:mail_form)
@@ -265,7 +265,7 @@ describe Mail do
         params[:plain_body].should == 'The body: Hello, world!'
         params[:html_body].should be_blank
       end
-      @mail.send.should be_true
+      @mail.send
     end
   end
 
@@ -281,7 +281,7 @@ describe Mail do
         params[:plain_body].should be_blank
         params[:html_body].should == '<html><body>Hello, world!</body></html>'
       end
-      @mail.send.should be_true
+      @mail.send
     end
   end
 end

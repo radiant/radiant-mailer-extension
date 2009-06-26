@@ -110,12 +110,19 @@ class Mail
   def filesize_limit
     config[:filesize_limit] || 0
   end
+  
+  def plain_body
+    return nil if not valid?
+    @plain_body ||= (page.part( :email ) ? page.render_part( :email ) : page.render_part( :email_plain ))
+  end
+  
+  def html_body
+    return nil if not valid?
+    @html_body = page.render_part( :email_html ) || nil
+  end
 
   def send
     return false if not valid?
-
-    plain_body = (page.part( :email ) ? page.render_part( :email ) : page.render_part( :email_plain ))
-    html_body = page.render_part( :email_html ) || nil
 
     if plain_body.blank? and html_body.blank?
       plain_body = <<-EMAIL

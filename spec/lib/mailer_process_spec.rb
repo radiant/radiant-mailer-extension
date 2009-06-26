@@ -17,10 +17,10 @@ describe "MailerProcess" do
 end
 
 describe SiteController, "receiving a mailer request", :type => :controller do
-  dataset :mailer
+  dataset :mailer_page
 
   before :each do
-    ResponseCache.instance.clear
+    Radiant::Cache.clear
     Radiant::Config['mailer.post_to_page?'] = true
     @page = pages(:mail_form)
     @mail = mock("Mail", :send => false, :data => {}, :errors => {})

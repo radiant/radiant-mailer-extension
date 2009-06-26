@@ -116,8 +116,12 @@ module MailerTags
   tag "mailer:submit" do |tag|
     value = tag.attr['value'] || tag.attr['name']
     tag.attr.merge!("name" => "mailer-form-button")
-    type = tag.attr['src'] ? 'image' : 'submit'
-    result = [%(<input onclick="showSubmitPlaceholder();" type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
+    src = tag.attr['src'] || nil
+    if src
+      result = [%(<input onclick="showSubmitPlaceholder();" type="image" src="#{src}" value="#{value}" #{mailer_attrs(tag)} />)]
+    else
+      result = [%(<input onclick="showSubmitPlaceholder();" type="submit" value="#{value}" #{mailer_attrs(tag)} />)]
+    end
   end
 
   desc %{
@@ -250,21 +254,6 @@ module MailerTags
     When used within mailer:get_each it defaults to getting elements within 
     that array. 
   }
-  # 
-  # tag 'mailer:get' do |tag|
-  #   name = tag.attr['name']
-  #   mail = tag.locals.page.last_mail
-  #   if tag.locals.mailer_element then
-  #     element = tag.locals.mailer_element
-  #   else
-  #     element = tag.locals.page.last_mail.data
-  #   end
-  #   if name
-  #     format_mailer_data(element, name)
-  #   else
-  #     element.to_hash.to_yaml.to_s
-  #   end
-  # end
   
   tag 'mailer:get' do |tag|
     name = tag.attr['name']
