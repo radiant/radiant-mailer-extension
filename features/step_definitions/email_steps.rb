@@ -15,7 +15,7 @@
 
 module EmailHelpers
   def current_email_address
-    "foo@bar.com" # Replace with your a way to find your current_email. e.g current_user.email
+    "example@aissac.ro" # Replace with your a way to find your current_email. e.g current_user.email
   end
 end
 World(EmailHelpers)
@@ -72,3 +72,10 @@ When /^I click the first link in the email$/ do
   click_first_link_in_email
 end
 
+Given /^the above email has been sent$/ do
+  Given "I go to the contact page"
+   When "I fill in \"name\" with \"Cristi\""
+   When "I fill in \"email\" with \"cristi.duma@aissac.ro\""
+   When "I fill in \"message\" with \"Have you heard?\""
+   When "I press \"Send\""
+end

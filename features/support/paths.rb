@@ -5,7 +5,9 @@ module NavigationHelpers
     when /the welcome page/
       admin_path
     when /the contact page/
-      '/mail-form'
+      '/contact'
+    when /the thank you page/
+      '/contact/thank-you'
     
     # Add more page name => path mappings here
     
