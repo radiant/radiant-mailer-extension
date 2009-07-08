@@ -8,6 +8,7 @@ Feature: Radiant Mailer Extension
      When I fill in "name" with "Cristi"
       And I fill in "email" with "cristi.duma@aissac.ro"
       And I fill in "message" with "Have you heard?"
+      And I fill in "attached_file" with the attachment
       And I press "Send"
      Then I should be on the thank you page
 
@@ -19,3 +20,4 @@ Feature: Radiant Mailer Extension
       And I should see "Name: Cristi" in the email
       And I should see "Email: cristi.duma@aissac.ro" in the email
       And I should see "Message: Have you heard?" in the email
+      And I should have an attachment

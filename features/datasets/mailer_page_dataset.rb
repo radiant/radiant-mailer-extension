@@ -13,9 +13,11 @@ class MailerPageDataset < Dataset::Base
             <r:mailer:text name="email" /> <br/>
             Message:<br/>
             <r:mailer:textarea name="message" /> <br/>
+            File:<br/>
+            <r:mailer:file name="attached_file" /> <br/>
             <input type="submit" value="Send" />
           </r:mailer:form>}
-      create_page_part "mailer",      
+      create_page_part "mailer",
         :content => {
             'subject' => 'From the website of Whatever',
             'from' => 'no_reply@aissac.ro',
@@ -30,6 +32,6 @@ class MailerPageDataset < Dataset::Base
           </r:mailer>
         }
       create_page "Thank You", :body => "Thank you!"
-    end
+    end    
   end
 end

@@ -71,11 +71,3 @@ end
 When /^I click the first link in the email$/ do
   click_first_link_in_email
 end
-
-Given /^the above email has been sent$/ do
-  Given "I go to the contact page"
-   When "I fill in \"name\" with \"Cristi\""
-   When "I fill in \"email\" with \"cristi.duma@aissac.ro\""
-   When "I fill in \"message\" with \"Have you heard?\""
-   When "I press \"Send\""
-end
