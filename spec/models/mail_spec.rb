@@ -265,7 +265,7 @@ describe Mail do
         params[:plain_body].should == 'The body: Hello, world!'
         params[:html_body].should be_blank
       end
-      @mail.send
+      @mail.send.should be_true
     end
   end
 
@@ -281,7 +281,7 @@ describe Mail do
         params[:plain_body].should be_blank
         params[:html_body].should == '<html><body>Hello, world!</body></html>'
       end
-      @mail.send
+      @mail.send.should be_true
     end
   end
 end

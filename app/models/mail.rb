@@ -125,7 +125,7 @@ class Mail
     return false if not valid?
 
     if plain_body.blank? and html_body.blank?
-      plain_body = <<-EMAIL
+      @plain_body = <<-EMAIL
 The following information was posted:
 #{data.to_hash.to_yaml}
       EMAIL
@@ -141,8 +141,8 @@ The following information was posted:
       :recipients => recipients,
       :from => from,
       :subject => subject,
-      :plain_body => plain_body,
-      :html_body => html_body,
+      :plain_body => @plain_body,
+      :html_body => @html_body,
       :cc => cc,
       :headers => headers,
       :files => files,
