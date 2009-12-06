@@ -13,6 +13,7 @@ module MailerProcess
 
       mail = Mail.new(part_page, config, request.parameters[:mailer])
       self.last_mail = part_page.last_mail = mail
+      process_mail(mail, config)
 
       if mail.send
         response.redirect(config[:redirect_to], "302 Found") and return if config[:redirect_to]
@@ -25,6 +26,11 @@ module MailerProcess
   end
 
   private
+  
+    # Hook here to do additional things, like check a CAPTCHA
+    def process_mail(mail, config)
+    end
+    
     def mailer_config_and_page
       page = self
       until page.part(:mailer) or (not page.parent)
