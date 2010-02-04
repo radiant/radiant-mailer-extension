@@ -331,9 +331,13 @@ module MailerTags
     attrs = {
       'id' => tag.attr['name'],
       'class' => nil,
-      'size' => nil}.merge(extras)
+      'size' => nil,
+      'title' => nil}.merge(extras)
     result = attrs.collect do |k,v|
       v = (tag.attr[k] || v)
+      if k == 'class' && tag.attr['required'].present?
+        v = [v, 'required', tag.attr['required']].compact.join(' ')
+      end
       next if v.blank?
       %(#{k}="#{v}")
     end.reject{|e| e.blank?}
