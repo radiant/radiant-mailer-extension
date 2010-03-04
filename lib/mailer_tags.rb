@@ -2,8 +2,8 @@ module MailerTags
   include Radiant::Taggable
   include ActionView::Helpers::DateHelper
 
-  def config
-    @config ||= begin
+  def mailer_config
+    @mailer_config ||= begin
       page = self
       until page.part(:mailer) or (not page.parent)
         page = page.parent
@@ -15,10 +15,10 @@ module MailerTags
 
   desc %{ All mailer-related tags live inside this one. }
   tag "mailer" do |tag|
-    if Mail.valid_config?(config)
+    if Mail.valid_config?(mailer_config)
       tag.expand
     else
-      "Mailer config is invalid: #{Mail.config_error_messages(config)}"
+      "Mailer config is invalid: #{Mail.config_error_messages(mailer_config)}"
     end
   end
 
