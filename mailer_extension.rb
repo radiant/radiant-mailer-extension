@@ -1,5 +1,5 @@
 class MailerExtension < Radiant::Extension
-  version "0.3"
+  version "1.0"
   description "Provides support for email forms and generic mailing functionality."
   url "http://github.com/radiant/radiant-mailer-extension"
 
