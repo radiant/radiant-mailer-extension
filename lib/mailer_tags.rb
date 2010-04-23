@@ -88,13 +88,13 @@ module MailerTags
     tag.expand if tag.locals.page.last_mail && tag.locals.page.last_mail.sent?
   end
 
-  %w(text checkbox radio hidden).each do |type|
+  %w(checkbox date datetime datetime-local email hidden month number radio range tel text time url week).each do |type|
     desc %{
       Renders a #{type} input tag for a mailer form. The 'name' attribute is required.}
     tag "mailer:#{type}" do |tag|
       raise_error_if_name_missing "mailer:#{type}", tag.attr
       value = (prior_value(tag) || tag.attr['value'])
-      result = [%(<input type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
+      result = [%(<input type="#{type}" value="#{value}" #{mailer_attrs(tag)}>)]
       add_required(result, tag)
     end
   end
@@ -147,7 +147,7 @@ module MailerTags
     if tag.locals.parent_tag_type == 'select'
       %(<option value="#{value}"#{%( selected="selected") if selected} #{mailer_attrs(tag)}>#{tag.expand}</option>)
     elsif tag.locals.parent_tag_type == 'radiogroup'
-      %(<input type="radio" value="#{value}"#{%( checked="checked") if selected} #{mailer_attrs(tag)} />)
+      %(<input type="radio" value="#{value}"#{%( checked="checked") if selected} #{mailer_attrs(tag)}>)
     end
   end
   
@@ -286,7 +286,16 @@ module MailerTags
     attrs = {
       'id' => tag.attr['name'],
       'class' => nil,
-      'size' => nil}.merge(extras)
+      'size' => nil,
+      'value' => nil,
+      'placeholder' => nil,
+      'autocomplete' => nil,
+      'autofocus' => nil,
+      'maxlength' => nil,
+      'pattern' => nil,
+      'min' => nil,
+      'max' => nil,
+      'step' => nil}.merge(extras)
     result = attrs.collect do |k,v|
       v = (tag.attr[k] || v)
       next if v.blank?
@@ -297,7 +306,7 @@ module MailerTags
   end
 
   def add_required(result, tag)
-    result << %(<input type="hidden" name="mailer[required][#{tag.attr['name']}]" value="#{tag.attr['required']}" />) if tag.attr['required']
+    result << %(<input type="hidden" name="mailer[required][#{tag.attr['name']}]" value="#{tag.attr['required']}">) if tag.attr['required']
     result
   end
 
