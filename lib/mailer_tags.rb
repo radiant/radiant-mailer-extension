@@ -303,7 +303,6 @@ module MailerTags
       'min' => nil,
       'pattern' => nil,
       'placeholder' => nil,
-      'required' => nil,
       'size' => nil,
       'spellcheck' => nil,
       'step' => nil,
