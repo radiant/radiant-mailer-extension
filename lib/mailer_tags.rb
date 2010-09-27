@@ -2,9 +2,9 @@ module MailerTags
   include Radiant::Taggable
   include ActionView::Helpers::DateHelper
 
-  def config
-    @config ||= begin
-      page = self
+  def mailer_config(mailer_page=self)
+    @mailer_config ||= begin
+      page = mailer_page
       until page.part(:mailer) or (not page.parent)
         page = page.parent
       end
@@ -15,10 +15,10 @@ module MailerTags
 
   desc %{ All mailer-related tags live inside this one. }
   tag "mailer" do |tag|
-    if Mail.valid_config?(config)
+    if Mail.valid_config?(mailer_config(tag.locals.page))
       tag.expand
     else
-      "Mailer config is invalid: #{Mail.config_error_messages(config)}"
+      "Mailer config is invalid: #{Mail.config_error_messages(mailer_config)}"
     end
   end
 
@@ -184,7 +184,7 @@ module MailerTags
     if tag.locals.parent_tag_type == 'select'
       %(<option value="#{value}"#{%( selected="selected") if selected} #{mailer_attrs(tag)}>#{value}</option>)
     elsif tag.locals.parent_tag_type == 'radiogroup'
-      %(<input type="radio" value="#{value}"#{%( checked="checked") if selected} #{mailer_attrs(tag)} />)
+      %(<input type="radio" value="#{value}"#{%( checked="checked") if selected} #{mailer_attrs(tag, "id" => tag.attr['name'] + value)} />)
     end
   end
   
