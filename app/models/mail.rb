@@ -161,7 +161,7 @@ The following information was posted:
   protected
 
   def valid_email?(email)
-    (email.blank? ? true : email =~ /^[^@]+@([^@.]+\.)[^@]+$/)
+    (email.blank? ? false : email =~ /^[^@]+@([^@.]+\.)[^@]+$/)
   end
   
   def is_required_field?(field_name)
