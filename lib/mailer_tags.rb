@@ -99,13 +99,13 @@ module MailerTags
     tag.expand if tag.locals.page.last_mail && tag.locals.page.last_mail.sent?
   end
 
-  %w(text password reset checkbox radio hidden file).each do |type|
+  %w(checkbox date datetime datetime-local email hidden month number radio range tel text time url week).each do |type|
     desc %{
       Renders a #{type} input tag for a mailer form. The 'name' attribute is required.}
     tag "mailer:#{type}" do |tag|
       raise_error_if_name_missing "mailer:#{type}", tag.attr
       value = (prior_value(tag) || tag.attr['value'])
-      result = [%(<input type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
+      result = [%(<input type="#{type}" value="#{value}" #{mailer_attrs(tag)}>)]
       add_required(result, tag)
     end
   end
@@ -329,10 +329,32 @@ module MailerTags
 
   def mailer_attrs(tag, extras={})
     attrs = {
-      'id' => tag.attr['name'],
+      'accept' => nil,
+      'accesskey' => nil,
+      'alt' => nil,
+      'autocomplete' => nil,
+      'autofocus' => nil,
+      'checked' => nil,
       'class' => nil,
+      'contextmenu' => nil,
+      'dir' => nil,
+      'disabled' => nil,
+      'height' => nil,
+      'hidden' => nil,
+      'id' => tag.attr['name'],
+      'lang' => nil,
+      'max' => nil,
+      'maxlength' => nil,
+      'min' => nil,
+      'pattern' => nil,
+      'placeholder' => nil,
       'size' => nil,
-      'title' => nil}.merge(extras)
+      'spellcheck' => nil,
+      'step' => nil,
+      'style' => nil,
+      'tabindex' => nil,
+      'title' => nil,
+      'width' => nil}.merge(extras)
     result = attrs.collect do |k,v|
       v = (tag.attr[k] || v)
       if k == 'class' && tag.attr['required'].present?
@@ -346,7 +368,7 @@ module MailerTags
   end
 
   def add_required(result, tag)
-    result << %(<input type="hidden" name="mailer[required][#{tag.attr['name']}]" value="#{tag.attr['required']}" />) if tag.attr['required']
+    result << %(<input type="hidden" name="mailer[required][#{tag.attr['name']}]" value="#{tag.attr['required']}">) if tag.attr['required']
     result
   end
 
