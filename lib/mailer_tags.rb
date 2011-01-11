@@ -276,7 +276,7 @@ module MailerTags
 
   def prior_value(tag, tag_name=tag.attr['name'])
     if mail = tag.locals.page.last_mail
-      mail.data[tag_name]
+      h mail.data[tag_name]
     else
       nil
     end
