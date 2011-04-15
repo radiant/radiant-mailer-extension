@@ -43,15 +43,20 @@ describe Mail do
     end
   end
 
-  it "should derive the from field from the configuration" do
-    @mail.from.should == 'foo@baz.com'
-  end
-
-  it "should derive the from field from the data when not in the configuration" do
-    @mail.config[:from] = nil
+  it "should derive the from field from the data if the configuration specifies a from field" do
     @mail.config[:from_field] = 'from'
     @mail.data['from'] = 'radiant@foo.com'
     @mail.from.should == 'radiant@foo.com'
+  end
+
+  it "should derive the from field from the configuration when the data from field value is an empty string" do
+    @mail.config[:from_field] = 'from'
+    @mail.data['from'] = ''
+    @mail.from.should == 'foo@baz.com'
+  end
+
+  it "should derive the from field from the configuration when the from field is not specified" do
+    @mail.from.should == 'foo@baz.com'
   end
 
   it "should derive the recipients field from the configuration" do

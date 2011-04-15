@@ -75,8 +75,16 @@ class Mail
     @valid
   end
   
+  # Give data precedence when config[:from_field] is set and the data from value is not blank
+  # I don't always want to require an email address from the user. In such cases, I want to
+  # set a default sender address in the email.
   def from
-    config[:from] || data[config[:from_field]]
+    if data[config[:from_field]].present?
+      address = data[config[:from_field]]
+    else
+      address = config[:from]
+    end
+    address
   end
 
   def recipients
