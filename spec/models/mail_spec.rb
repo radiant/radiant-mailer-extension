@@ -53,11 +53,6 @@ describe Mail do
     @mail.data['from'] = 'radiant@foo.com'
     @mail.from.should == 'radiant@foo.com'
   end
-  
-  it "should derive the from field from the configuration when the from field points to a non-existent field" do
-    @mail.config[:from_field] = 'asdf'
-    @mail.from.should== 'foo@baz.com'
-  end
 
   it "should derive the recipients field from the configuration" do
     @mail.recipients.should == ['foo@bar.com']
