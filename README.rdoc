@@ -15,10 +15,6 @@ You configure the recipients and other Mailer settings in a "mailer" part:
     - one@one.com
     - two@two.com
 
-If you use both "from:" and "from_field:" in the "mailer" part, "from_field:"
-takes precedence. In that case, "from:" supplies a default sender address for
-when the user leaves his or her email address blank.
-
 The following tags are available to help you build the form:
 
   <r:mailer:form name=""> ... </r:mailer:form> 
