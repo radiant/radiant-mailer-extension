@@ -15,7 +15,7 @@ describe "MailerTags" do
   describe "<r:mailer:if_error>" do
     before :each do
       @page = pages(:mail_form)
-      @page.last_mail = @mail = Mail.new(@page, @page.config, 'body' => 'Hello, world!')
+      @page.last_mail = @mail = Mail.new(@page, config(@page), 'body' => 'Hello, world!')
     end
 
     it "should render its contents if there was an error in the last posted mail" do
@@ -44,7 +44,7 @@ describe "MailerTags" do
   describe "<r:mailer:if_error:message>" do
     before :each do
       @page = pages(:mail_form)
-      @page.last_mail = @mail = Mail.new(@page, @page.config, 'body' => 'Hello, world!')
+      @page.last_mail = @mail = Mail.new(@page, config(@page), 'body' => 'Hello, world!')
     end
 
     it "should render the error message on the specified attribute" do
@@ -56,7 +56,7 @@ describe "MailerTags" do
   describe "<r:mailer:unless_error>" do
     before :each do
       @page = pages(:mail_form)
-      @page.last_mail = @mail = Mail.new(@page, @page.config, 'body' => 'Hello, world!')
+      @page.last_mail = @mail = Mail.new(@page, config(@page), 'body' => 'Hello, world!')
     end
 
     it "should render its contents if there was not error in the last posted mail" do
@@ -123,7 +123,7 @@ describe "MailerTags" do
   describe "<r:mailer:if_success>" do
     before :each do
       @page = pages(:mail_form)
-      @page.last_mail = @mail = Mail.new(@page, @page.config, 'body' => 'Hello, world!')
+      @page.last_mail = @mail = Mail.new(@page, config(@page), 'body' => 'Hello, world!')
     end
 
     it "should render its contents if the last posted mail was sent successfully" do
@@ -153,7 +153,7 @@ describe "MailerTags" do
 
       it "should render the previously posted value when present as the value attribute, overriding a passed value attribute" do
         @page = pages(:mail_form)
-        @page.last_mail = @mail = Mail.new(@page, @page.config, 'foo' => 'Hello, world!')
+        @page.last_mail = @mail = Mail.new(@page, config(@page), 'foo' => 'Hello, world!')
         @page.should render("<r:mailer:#{type} name='foo' value='bar'/>").as(%Q{<input type="#{type}" value="Hello, world!" id="foo" name="mailer[foo]" />})
       end
 
@@ -227,7 +227,7 @@ describe "MailerTags" do
 
     it "should select the option tag with previously posted value" do
       @page = pages(:mail_form)
-      @page.last_mail = @mail = Mail.new(@page, @page.config, 'foo' => 'baz')
+      @page.last_mail = @mail = Mail.new(@page, config(@page), 'foo' => 'baz')
       @page.should render('<r:mailer:select name="foo"><r:option value="bar" selected="selected">bar</r:option><r:option value="baz">baz</r:option></r:mailer:select>').as('<select size="1" id="foo" name="mailer[foo]"><option value="bar" >bar</option><option value="baz" selected="selected" >baz</option></select>')
     end
     
@@ -307,7 +307,7 @@ describe "MailerTags" do
     
     it "should select the radio button with previously posted value" do
       @page = pages(:mail_form)
-      @page.last_mail = @mail = Mail.new(@page, @page.config, 'foo' => 'baz')
+      @page.last_mail = @mail = Mail.new(@page, config(@page), 'foo' => 'baz')
       @page.should render('<r:mailer:radiogroup name="foo"><r:option value="bar" selected="selected"/><r:option value="baz" /></r:mailer:radiogroup>').as('<input type="radio" value="bar" id="foo" name="mailer[foo]" /><input type="radio" value="baz" checked="checked" id="foo" name="mailer[foo]" />')
     end
   end
@@ -315,7 +315,7 @@ describe "MailerTags" do
   describe "<r:mailer:get>" do
     before :each do
       @page = pages(:mail_form)
-      @page.last_mail = @mail = Mail.new(@page, @page.config, 'foo' => 'baz')
+      @page.last_mail = @mail = Mail.new(@page, config(@page), 'foo' => 'baz')
     end
     
     it "should render the data as YAML when no name is given" do
@@ -331,7 +331,7 @@ describe "MailerTags" do
     end
     
     it "should render date when date params are detected" do
-      @page.last_mail = @mail = Mail.new(@page, @page.config, 'foo(1i)' => '2008', 'foo(2i)' => '10', 'foo(3i)' => '29')
+      @page.last_mail = @mail = Mail.new(@page, config(@page), 'foo(1i)' => '2008', 'foo(2i)' => '10', 'foo(3i)' => '29')
       @page.should render('<r:mailer:get name="foo" />').as('2008-10-29')
     end
   end
@@ -346,7 +346,7 @@ describe "MailerTags" do
       test_array=[ { 'qty' => 10, 'name' => 'foo' }, 
                    { 'qty' => 5, 'name' => 'bar' } ]
       @page = pages(:mail_form)
-      @page.last_mail = @mail = Mail.new(@page, @page.config, 'qty' => 'wrong', 'products' => test_array)
+      @page.last_mail = @mail = Mail.new(@page, config(@page), 'qty' => 'wrong', 'products' => test_array)
     end
     
     it "should not alter the content on its own" do
@@ -369,7 +369,7 @@ describe "MailerTags" do
     describe 'if responds to original_filename' do
       it "should render it for single files" do
         file = mock(StringIO, :original_filename => "readme.txt")
-        @page.last_mail = @mail = Mail.new(@page, @page.config, 'file' => file)
+        @page.last_mail = @mail = Mail.new(@page, config(@page), 'file' => file)
         @page.should render('<r:mailer:get name="file" />').as('readme.txt')
       end
 
@@ -377,7 +377,7 @@ describe "MailerTags" do
       it "should render them as sentence for 2 files" do
         file = mock(StringIO, :original_filename => "readme.txt")
         file2 = mock(StringIO, :original_filename => "install.txt")
-        @page.last_mail = @mail = Mail.new(@page, @page.config, 'file' => [file, file2])
+        @page.last_mail = @mail = Mail.new(@page, config(@page), 'file' => [file, file2])
         @page.should render('<r:mailer:get name="file" />').as('readme.txt and install.txt')
       end
 
@@ -386,7 +386,7 @@ describe "MailerTags" do
         file = mock(StringIO, :original_filename => "readme.txt")
         file2 = mock(StringIO, :original_filename => "install.txt")
         file3 = mock(StringIO, :original_filename => "rakefile")
-        @page.last_mail = @mail = Mail.new(@page, @page.config, 'file' => [file, file2, file3])
+        @page.last_mail = @mail = Mail.new(@page, config(@page), 'file' => [file, file2, file3])
         @page.should render('<r:mailer:get name="file" />').as('readme.txt, install.txt, and rakefile')
       end
     end
@@ -395,7 +395,7 @@ describe "MailerTags" do
   describe "<r:mailer:if_value>" do
     before :each do
       @page = pages(:mail_form)
-      @page.last_mail = @mail = Mail.new(@page, @page.config, 'foo' => 'baz')
+      @page.last_mail = @mail = Mail.new(@page, config(@page), 'foo' => 'baz')
     end
     
     it "should render its contained block if the specified value was submitted" do
@@ -405,5 +405,13 @@ describe "MailerTags" do
     it "should render not its contained block if the specified value was not submitted" do
       @page.should render('<r:mailer:if_value name="bar">true</r:mailer:if_value>').as('')
     end
+  end
+  
+  
+  private
+  
+  def config(page)
+    string = page.render_part(:mailer)
+    string.empty? ? {} : YAML::load(string).symbolize_keys
   end
 end
