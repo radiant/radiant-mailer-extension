@@ -3,7 +3,7 @@ class Mail
 
   def initialize(page, config, data)
     @page, @config, @data = page, config.with_indifferent_access, data
-    @required = @data.delete(:required)
+    @required = required_fields
     @errors = {}
   end
 
@@ -166,5 +166,9 @@ The following information was posted:
   
   def is_required_field?(field_name)
     @required && @required.any? {|name,_| name == field_name}
+  end
+  
+  def required_fields
+    @config.has_key?(:required) ? @config[:required] : @data.delete(:required)
   end
 end

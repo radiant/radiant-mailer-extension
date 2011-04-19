@@ -171,6 +171,12 @@ describe Mail do
         @mail.should_not be_valid
         @mail.errors['first_name'].should_not be_blank
       end
+
+      it "should also be invalid when a field required in the config is missing" do
+        @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com', :required => {'first_name' => value}}, {})
+        @mail.should_not be_valid
+        @mail.errors['first_name'].should_not be_blank
+      end
     end
   end
   
@@ -182,27 +188,59 @@ describe Mail do
         @mail.should be_valid
         @mail.errors['first_name'].should be_blank
       end
+
+      it "#{value}" do
+        @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com'}, :required => {'first_name' => value},
+        'first_name' => "Name")
+        @mail.should be_valid
+        @mail.errors['first_name'].should be_blank
+      end
     end
   end
   
-  it "should be invalid when a required field is invalid email" do
-    @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com'},
-      {:required => {'first_email' => "as_email"}, 'first_email' => "at@.com"})
-    @mail.should_not be_valid
-    @mail.errors['first_email'].should_not be_blank
+  describe "should be invalid when a required field is invalid email" do
+    it "and required is specified in the form" do
+      @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com'},
+        {:required => {'first_email' => "as_email"}, 'first_email' => "at@.com"})
+      @mail.should_not be_valid
+      @mail.errors['first_email'].should_not be_blank
+    end
+    
+    it "and required is specified in the config" do
+      @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com', :required => {'first_email' => "as_email"}},
+        'first_email' => "at@.com")
+      @mail.should_not be_valid
+      @mail.errors['first_email'].should_not be_blank
+    end
   end
   
   describe "with regex required" do
-    it "should be invalid when a required field doesn't match given regex" do
+    it "should be invalid when a required field doesn't match regex given on the form" do
       @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com'},
         {:required => {'birthday' => "/^\\d{2}\\.\\d{2}\\.\\d{4}$/"}, 'birthday' => "11.11.11"})
       @mail.should_not be_valid
       @mail.errors['birthday'].should_not be_blank
       @mail.errors['birthday'].should == "doesn't match regex (^\\d{2}\\.\\d{2}\\.\\d{4}$)"
     end
-    it "should be valid when a required field matches given regex" do
+    
+    it "should be valid when a required field matches regex given on the form" do
       @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com'},
         {:required => {'birthday' => "/^\\d{2}\\.\\d{2}\\.\\d{4}$/"}, 'birthday' => "12.21.1980"})
+      @mail.should be_valid
+      @mail.errors['birthday'].should be_blank
+    end
+
+    it "should be invalid when a required field doesn't match regex given in the config" do
+      @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com', :required => {'birthday' => "/^\\d{2}\\.\\d{2}\\.\\d{4}$/"}},
+        'birthday' => "11.11.11")
+      @mail.should_not be_valid
+      @mail.errors['birthday'].should_not be_blank
+      @mail.errors['birthday'].should == "doesn't match regex (^\\d{2}\\.\\d{2}\\.\\d{4}$)"
+    end
+    
+    it "should be valid when a required field matches regex given in the config" do
+      @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com', :required => {'birthday' => "/^\\d{2}\\.\\d{2}\\.\\d{4}$/"}},
+        'birthday' => "12.21.1980")
       @mail.should be_valid
       @mail.errors['birthday'].should be_blank
     end
