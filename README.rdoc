@@ -100,6 +100,22 @@ Simple example of a required field with regexp validation:
    <r:mailer:submit name="Send" />
   </r:mailer:form>
 
+Finally, you can put all field validations in the "mailer" part:
+
+    subject: From the website of Whatever
+    from: noreply@example.com
+    redirect_to: /contact/thank-you
+    recipients:
+      - one@one.com
+      - two@two.com
+    required:
+      name: "true"
+      email: as_email
+      message: "true"
+
+The field names above are "name," "email," and "message." Note the quotation marks around true values. If you do your field validations this way, Mailer will ignore any validations you attempt through your radius tags. This method of validation keeps Mailer from adding hidden inputs to keep track of required fields. See the caveat below.
+
+
 === File attachments
 
 In many cases it is desirable to limit the maximum size of a file that may be uploaded. This is set as the max_filesize attribute for mailers in the mailer page part. Any file included in the form will have the limit imposed. Following is a simple example mailer part that includes a file size limit of 100,000 bytes:
@@ -160,7 +176,7 @@ Use the from_field or other options to get to the email adress that was posted (
 
 Relative urls will almost certainly not work if the mailer fails validation. Solution? Only use absolute urls.
 
-Field validation is currently implemented via easily spoofable HTML attributes. Think of them of more like guidelines.
+Unless you set up the field validations in the "mailer" part, validation will be implemented via easily spoofable HTML attributes. Think of them of more like guidelines in that case.
 
 == History
 
