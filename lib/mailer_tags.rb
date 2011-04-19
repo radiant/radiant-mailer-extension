@@ -105,7 +105,7 @@ module MailerTags
     tag "mailer:#{type}" do |tag|
       raise_error_if_name_missing "mailer:#{type}", tag.attr
       value = (prior_value(tag) || tag.attr['value'])
-      result = [%(<input type="#{type}" value="#{value}" #{mailer_attrs(tag)}>)]
+      result = [%(<input type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
       add_required(result, tag)
     end
   end
@@ -368,7 +368,7 @@ module MailerTags
   end
 
   def add_required(result, tag)
-    result << %(<input type="hidden" name="mailer[required][#{tag.attr['name']}]" value="#{tag.attr['required']}">) if tag.attr['required']
+    result << %(<input type="hidden" name="mailer[required][#{tag.attr['name']}]" value="#{tag.attr['required']}" />) if tag.attr['required']
     result
   end
 

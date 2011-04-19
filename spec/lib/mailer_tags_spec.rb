@@ -137,7 +137,7 @@ describe "MailerTags" do
     end
   end
 
-  %w(text password checkbox radio hidden file reset).each do |type|
+  %w(text checkbox radio hidden).each do |type|
     describe "<r:mailer:#{type}>" do
       it "should render an input tag with the type #{type}" do
         pages(:mail_form).should render("<r:mailer:#{type} name='foo' />").as(%Q{<input type="#{type}" value="" id="foo" name="mailer[foo]" />})
@@ -293,22 +293,26 @@ describe "MailerTags" do
       pages(:mail_form).should render('<r:mailer:radiogroup name="foo">bar</r:mailer:radiogroup>').as('bar')
     end
     
+    it "should concatenate the radiogroup's name with the option's value and save this as the option's id attribute" do
+      pages(:mail_form).should render('<r:mailer:radiogroup name="foo"><r:option value="bar" selected="selected"/><r:option value="baz" /></r:mailer:radiogroup>').as('<input type="radio" value="bar" checked="checked" id="foobar" name="mailer[foo]" /><input type="radio" value="baz" id="foobaz" name="mailer[foo]" />')
+    end
+    
     it "should raise an error if the name attribute is not specified" do
       pages(:mail_form).should render("<r:mailer:radiogroup />").with_error("`mailer:radiogroup' tag requires a `name' attribute")
     end
     
     it "should render nested <r:mailer:option> tags as radio buttons" do
-      pages(:mail_form).should render('<r:mailer:radiogroup name="foo"><r:option value="bar" /></r:mailer:radiogroup>').as('<input type="radio" value="bar" id="foo" name="mailer[foo]" />')
+      pages(:mail_form).should render('<r:mailer:radiogroup name="foo"><r:option value="bar" /></r:mailer:radiogroup>').as('<input type="radio" value="bar" id="foobar" name="mailer[foo]" />')
     end
     
     it "should select the specified radio button on a new form" do
-      pages(:mail_form).should render('<r:mailer:radiogroup name="foo"><r:option value="bar" selected="selected"/><r:option value="baz" /></r:mailer:radiogroup>').as('<input type="radio" value="bar" checked="checked" id="foo" name="mailer[foo]" /><input type="radio" value="baz" id="foo" name="mailer[foo]" />')
+      pages(:mail_form).should render('<r:mailer:radiogroup name="foo"><r:option value="bar" selected="selected"/><r:option value="baz" /></r:mailer:radiogroup>').as('<input type="radio" value="bar" checked="checked" id="foobar" name="mailer[foo]" /><input type="radio" value="baz" id="foobaz" name="mailer[foo]" />')
     end
     
     it "should select the radio button with previously posted value" do
       @page = pages(:mail_form)
       @page.last_mail = @mail = Mail.new(@page, config(@page), 'foo' => 'baz')
-      @page.should render('<r:mailer:radiogroup name="foo"><r:option value="bar" selected="selected"/><r:option value="baz" /></r:mailer:radiogroup>').as('<input type="radio" value="bar" id="foo" name="mailer[foo]" /><input type="radio" value="baz" checked="checked" id="foo" name="mailer[foo]" />')
+      @page.should render('<r:mailer:radiogroup name="foo"><r:option value="bar" selected="selected"/><r:option value="baz" /></r:mailer:radiogroup>').as('<input type="radio" value="bar" id="foobar" name="mailer[foo]" /><input type="radio" value="baz" checked="checked" id="foobaz" name="mailer[foo]" />')
     end
   end
   
