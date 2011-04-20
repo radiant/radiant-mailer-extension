@@ -1,9 +1,10 @@
 class Mail
-  attr_reader :page, :config, :data, :errors
+  attr_reader :page, :config, :data, :leave_blank, :errors
 
   def initialize(page, config, data)
     @page, @config, @data = page, config.with_indifferent_access, data
     @required = required_fields
+    @leave_blank = leave_blank_field
     @errors = {}
   end
 
@@ -69,6 +70,14 @@ class Mail
               @valid = false
             end
           end
+        end
+      end
+      
+      if leave_blank_field.present?
+        name = @config[:leave_blank]
+        unless @data[name].blank?
+          errors[name] = "must be left blank."
+          @valid = false
         end
       end
     end
@@ -170,5 +179,9 @@ The following information was posted:
   
   def required_fields
     @config.has_key?(:required) ? @config[:required] : @data.delete(:required)
+  end
+  
+  def leave_blank_field
+    @config[:leave_blank] if @config.has_key?(:leave_blank)
   end
 end

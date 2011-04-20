@@ -245,6 +245,37 @@ describe Mail do
       @mail.errors['birthday'].should be_blank
     end
   end
+  
+  describe "should be valid when spam trap field" do
+    it "is not included in config" do
+      @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com'},
+        'spam_trap' => "I'm a spam bot.")
+      @mail.should be_valid
+      @mail.errors['spam_trap'].should be_blank
+    end
+    
+    it "is included in config but not field is given" do
+      @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com', :leave_blank => ''},
+        'spam_trap' => "I'm a spam bot.")
+      @mail.should be_valid
+      @mail.errors['spam_trap'].should be_blank
+    end
+  end
+  
+  it "should be valid when the spam trap field is empty" do
+    @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com', :leave_blank => 'spam_trap'},
+      'spam_trap' => '')
+    @mail.should be_valid
+    @mail.errors['spam_trap'].should be_blank
+  end
+  
+  it "should be invalid when the spam trap field has text in it" do
+    @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com', :leave_blank => 'spam_trap'},
+      'spam_trap' => "I'm a spam bot.")
+    @mail.should_not be_valid
+    @mail.errors['spam_trap'].should_not be_blank
+    @mail.errors['spam_trap'].should == 'must be left blank.'
+  end
 
   it "should not send the mail if invalid" do
     @mail.should_receive(:valid?).and_return(false)
