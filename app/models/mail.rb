@@ -1,10 +1,11 @@
 class Mail
-  attr_reader :page, :config, :data, :leave_blank, :errors
+  attr_reader :page, :config, :data, :leave_blank, :disallow_links, :errors
 
   def initialize(page, config, data)
     @page, @config, @data = page, config.with_indifferent_access, data
     @required = required_fields
     @leave_blank = leave_blank_field
+    @disallow_links = disallow_link_fields
     @errors = {}
   end
 
@@ -73,14 +74,24 @@ class Mail
         end
       end
       
-      if leave_blank_field.present?
-        name = @config[:leave_blank]
-        unless @data[name].blank?
-          errors[name] = "must be left blank."
+      if @disallow_links.present?
+        pattern = /www|&amp;|http:|mailto:|bcc:|href|cc:|multipart|\[url|Content-Type:/i
+        @disallow_links.each do |field|
+          if @data[field] =~ pattern
+            errors[field] = %q(must not contain the following text: "www", "&amp;amp;", "http:", "mailto:", "bcc:", "href", "multipart", "[url", or "Content-Type:")
+            @valid = false
+          end
+        end
+      end 
+
+      if @leave_blank.present?
+        unless @data[@leave_blank] == ''
+          errors[@leave_blank] = "must be left blank."
           @valid = false
         end
       end
     end
+    
     @valid
   end
   
@@ -183,5 +194,9 @@ The following information was posted:
   
   def leave_blank_field
     @config[:leave_blank] if @config.has_key?(:leave_blank)
+  end
+  
+  def disallow_link_fields
+    @config[:disallow_links] if @config.has_key?(:disallow_links)
   end
 end

@@ -102,18 +102,45 @@ Simple example of a required field with regexp validation:
 
 Finally, you can put all field validations in the "mailer" part:
 
-    subject: From the website of Whatever
-    from: noreply@example.com
-    redirect_to: /contact/thank-you
-    recipients:
-      - one@one.com
-      - two@two.com
-    required:
-      name: "true"
-      email: as_email
-      message: "true"
+  subject: From the website of Whatever
+  from: noreply@example.com
+  redirect_to: /contact/thank-you
+  recipients:
+    - one@one.com
+  required:
+    name: "true"
+    email: as_email
+    message: "true"
 
 The field names above are "name," "email," and "message." Note the quotation marks around true values. If you do your field validations this way, Mailer will ignore any validations you attempt through your radius tags. This method of validation keeps Mailer from adding hidden inputs to keep track of required fields. See the caveat below.
+
+
+=== Spam blocking
+
+You can specify which fields may not contain anything that looks like a link in the "mailer" part. For example:
+
+  subject: From the website of Whatever
+  from: noreply@example.com
+  redirect_to: /contact/thank-you
+  recipients:
+    - one@one.com
+  disallow_links:
+    - comments
+    - questions
+
+The comments and questions fields would throw an error if the user or a spam bot entered the following phrases: "www", "&amp;", "http:", "mailto:", "bcc:", "href", "multipart", "[url", or "Content-Type:".
+
+
+You can also include one field on your form that must be left blank. If anyone enters something in the field, the field throws an error. The tactic here is to hide the field from human readers, but to leave the field visible to spam bots. Here is how you would edit the "mailer" part to implement this:
+
+  subject: From the website of Whatever
+  from: noreply@example.com
+  redirect_to: /contact/thank-you
+  recipients:
+    - one@one.com
+  leave_blank: your_field_name
+
+"your_field_name" is the name of the field you want to hide. It is up to you to hide the field when you construct your form. I would recommend against using a traditional hidden input field. Use style="display:none" instead.
 
 
 === File attachments

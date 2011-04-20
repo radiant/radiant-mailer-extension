@@ -276,6 +276,25 @@ describe Mail do
     @mail.errors['spam_trap'].should_not be_blank
     @mail.errors['spam_trap'].should == 'must be left blank.'
   end
+  
+  it "should be invalid when a field that disallows links has text that looks like a link" do
+    ['Check out http://example.com',
+     'Check out www.example.com',
+     'Check out example.com?a=4&amp;b=5',
+     'Check out <a href="">Spam site</a>',
+     'Spam mailto:',
+     'Spam bcc:',
+     'Spam cc:',
+     'Spam multipart',
+     'Spam [url is',
+     'Spam Content-Type:'].each do |message|
+      @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com', :disallow_links => ['comments']},
+        'comments' => message)
+      @mail.should_not be_valid
+      @mail.errors['comments'].should_not be_blank
+      @mail.errors['comments'].should == 'must not contain the following text: "www", "&amp;amp;", "http:", "mailto:", "bcc:", "href", "multipart", "[url", or "Content-Type:"'
+    end
+  end    
 
   it "should not send the mail if invalid" do
     @mail.should_receive(:valid?).and_return(false)
