@@ -1,8 +1,9 @@
+require 'radiant-mailer-extension'
 class MailerExtension < Radiant::Extension
-  version "1.0"
-  description "Provides support for email forms and generic mailing functionality."
-  url "http://github.com/radiant/radiant-mailer-extension"
-
+  version RadiantMailerExtension::VERSION
+  description RadiantMailerExtension::DESCRIPTION
+  url RadiantMailerExtension::URL
+  
   def activate
     Page.class_eval do
       include MailerTags
