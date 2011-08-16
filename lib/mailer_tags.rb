@@ -1,6 +1,7 @@
 module MailerTags
   include Radiant::Taggable
   include ActionView::Helpers::DateHelper
+  include ActionView::Helpers::TagHelper
 
   def mailer_config(mailer_page=self)
     @mailer_config ||= begin
@@ -37,6 +38,7 @@ module MailerTags
         end
       else
         unless mail.valid?
+          tag.locals.error_messages = mail.errors
           tag.expand
         end
       end
@@ -64,6 +66,13 @@ module MailerTags
 
   desc %{Outputs the error message.}
   tag "mailer:if_error:message" do |tag|
+    if tag.locals.error_messages
+      result = []
+      tag.locals.error_messages.each do |on, err|
+        result << content_tag(:li, "#{on} #{err}")
+      end
+      return content_tag(:ul, result)
+    end
     tag.locals.error_message
   end
 
