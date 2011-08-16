@@ -2,7 +2,6 @@
 
 The Mailer extension enables form mail on a page.
 
-
 == Usage
 
 You can define email templates using pages parts (email, and/or email_html).
@@ -17,10 +16,10 @@ You configure the recipients and other Mailer settings in a "mailer" part:
 
 The following tags are available to help you build the form:
 
-  <r:mailer:form name=""> ... </r:mailer:form> 
-  <r:mailer:text name="" /> 
-  <r:mailer:password name="" /> 
-  <r:mailer:reset name="" /> 
+  <r:mailer:form name=""> ... </r:mailer:form>
+  <r:mailer:text name="" />
+  <r:mailer:password name="" />
+  <r:mailer:reset name="" />
   <r:mailer:checkbox name="" />
   <r:mailer:radio name="" />
   <r:mailer:file name="" />
@@ -169,7 +168,7 @@ If you are using email or email_html parts then the <r:mailer:get name="" /> tag
 
 === Submit placeholder
 
-If you wish to show show that activity is taking place during submission you may use the <r:mailer:submit_placeholder /> tag in your form. This will insert a hidden div with the contents of the submit_placeholder page part. The div will be displayed when the user clicks any submit button.
+If you wish to show that activity is taking place during submission you may use the <r:mailer:submit_placeholder /> tag in your form. This will insert a hidden div with the contents of the submit_placeholder page part. The div will be displayed when the user clicks any submit button.
 
 === User-provided Configuration
 
