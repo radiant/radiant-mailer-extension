@@ -158,7 +158,7 @@ describe "MailerTags" do
       end
 
       it "should add a 'required' hidden field when the required attribute is specified" do
-        pages(:mail_form).should render("<r:mailer:#{type} name='foo' required='true'/>").as(%Q{<input type="#{type}" value="" id="foo" name="mailer[foo]" /><input type="hidden" name="mailer[required][foo]" value="true" />})
+        pages(:mail_form).should render("<r:mailer:#{type} name='foo' required='true'/>").as(%Q{<input type="#{type}" value="" class="required true" id="foo" name="mailer[foo]" /><input type="hidden" name="mailer[required][foo]" value="true" />})
       end
 
       it "should raise an error if the name attribute is not specified" do
@@ -232,7 +232,7 @@ describe "MailerTags" do
     end
     
     it "should add a 'required' hidden field when the required attribute is specified" do
-      pages(:mail_form).should render("<r:mailer:select name='foo' required='true'/>").as(%Q{<select size="1" id="foo" name="mailer[foo]"></select><input type="hidden" name="mailer[required][foo]" value="true" />})
+      pages(:mail_form).should render("<r:mailer:select name='foo' required='true'/>").as(%Q{<select size="1" class="required true" id="foo" name="mailer[foo]"></select><input type="hidden" name="mailer[required][foo]" value="true" />})
     end
   end
   
@@ -284,7 +284,7 @@ describe "MailerTags" do
     end
     
     it "should add a 'required' hidden field when the required attribute is specified" do
-      pages(:mail_form).should render("<r:mailer:textarea name='body' required='true'/>").as(%Q{<textarea id="body" rows="5" cols="35" name="mailer[body]"></textarea><input type="hidden" name="mailer[required][body]" value="true" />})
+      pages(:mail_form).should render("<r:mailer:textarea name='body' required='true'/>").as(%Q{<textarea class="required true" id="body" rows="5" cols="35" name="mailer[body]"></textarea><input type="hidden" name="mailer[required][body]" value="true" />})
     end
   end
   
