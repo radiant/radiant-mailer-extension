@@ -108,7 +108,7 @@ module MailerTags
     tag.expand if tag.locals.page.last_mail && tag.locals.page.last_mail.sent?
   end
 
-  %w(checkbox date datetime datetime-local email hidden month number radio range tel text time url week).each do |type|
+  %w(checkbox date datetime datetime-local email file hidden month number radio range tel text time url week).each do |type|
     desc %{
       Renders a #{type} input tag for a mailer form. The 'name' attribute is required.}
     tag "mailer:#{type}" do |tag|
