@@ -99,6 +99,7 @@ module MailerTags
     }
   }
 </script>)
+    results.flatten.join
   end
 
   desc %{
@@ -131,6 +132,7 @@ module MailerTags
     else
       result = [%(<input onclick="showSubmitPlaceholder();" type="submit" value="#{value}" #{mailer_attrs(tag)} />)]
     end
+    result.flatten.join
   end
 
   desc %{
@@ -143,6 +145,7 @@ module MailerTags
       results << render_part(:submit_placeholder)
       results << %Q(</div>)
     end
+    results.flatten.join
   end
 
   desc %{
@@ -228,7 +231,7 @@ module MailerTags
           result << tag.expand
         end
     end
-    result
+    result.flatten.join
   end
   
   desc %{ 
@@ -378,7 +381,7 @@ module MailerTags
 
   def add_required(result, tag)
     result << %(<input type="hidden" name="mailer[required][#{tag.attr['name']}]" value="#{tag.attr['required']}" />) if tag.attr['required']
-    result
+    result.flatten.join
   end
 
   def raise_error_if_name_missing(tag_name, tag_attr)
