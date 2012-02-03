@@ -97,7 +97,7 @@ namespace :spec do
 end
 
 desc 'Generate documentation for the mailer extension.'
-RDoc:Task.new(:rdoc) do |rdoc|
+RDoc::Task.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = 'MailerExtension'
   rdoc.options << '--line-numbers' << '--inline-source'
