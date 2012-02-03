@@ -140,8 +140,9 @@ module MailerTags
     div will be shown when a user submits a mailer form.
   }
   tag "mailer:submit_placeholder" do |tag|
+    results = []
     if part(:submit_placeholder)
-      results = %Q(<div id="submit-placeholder-part" style="display:none">)
+      results << %Q(<div id="submit-placeholder-part" style="display:none">)
       results << render_part(:submit_placeholder)
       results << %Q(</div>)
     end
