@@ -24,7 +24,7 @@ class Mail
   end
   
   def self.config_error_messages(config)
-    config_errors(config).collect do |field, message|
+    config_errors(config).sort.collect do |field, message|
       "'#{field}' #{message}"
     end.to_sentence
   end

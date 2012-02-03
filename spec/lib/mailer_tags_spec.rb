@@ -206,7 +206,7 @@ describe "MailerTags" do
 
   describe "<r:mailer:select>" do
     it "should render a select tag" do
-      pages(:mail_form).should render('<r:mailer:select name="foo" />').as('<select size="1" id="foo" name="mailer[foo]"></select>')
+      pages(:mail_form).should render('<r:mailer:select name="foo" />').as('<select id="foo" size="1" name="mailer[foo]"></select>')
     end
 
     it "should raise an error if the name attribute is not specified" do
@@ -214,25 +214,25 @@ describe "MailerTags" do
     end
 
     it "should render its contents within the select tag" do
-      pages(:mail_form).should render('<r:mailer:select name="foo">bar</r:mailer:select>').as('<select size="1" id="foo" name="mailer[foo]">bar</select>')
+      pages(:mail_form).should render('<r:mailer:select name="foo">bar</r:mailer:select>').as('<select id="foo" size="1" name="mailer[foo]">bar</select>')
     end
 
     it "should render nested <r:mailer:option> tags as option tags" do
-      pages(:mail_form).should render('<r:mailer:select name="foo"><r:option value="bar">bar</r:option></r:mailer:select>').as('<select size="1" id="foo" name="mailer[foo]"><option value="bar" >bar</option></select>')
+      pages(:mail_form).should render('<r:mailer:select name="foo"><r:option value="bar">bar</r:option></r:mailer:select>').as('<select id="foo" size="1" name="mailer[foo]"><option value="bar" >bar</option></select>')
     end
 
     it "should select the specified option tag on a new form" do
-      pages(:mail_form).should render('<r:mailer:select name="foo"><r:option value="bar" selected="selected">bar</r:option><r:option value="baz">baz</r:option></r:mailer:select>').as('<select size="1" id="foo" name="mailer[foo]"><option value="bar" selected="selected" >bar</option><option value="baz" >baz</option></select>')
+      pages(:mail_form).should render('<r:mailer:select name="foo"><r:option value="bar" selected="selected">bar</r:option><r:option value="baz">baz</r:option></r:mailer:select>').as('<select id="foo" size="1" name="mailer[foo]"><option value="bar" selected="selected" >bar</option><option value="baz" >baz</option></select>')
     end
 
     it "should select the option tag with previously posted value" do
       @page = pages(:mail_form)
       @page.last_mail = @mail = Mail.new(@page, config(@page), 'foo' => 'baz')
-      @page.should render('<r:mailer:select name="foo"><r:option value="bar" selected="selected">bar</r:option><r:option value="baz">baz</r:option></r:mailer:select>').as('<select size="1" id="foo" name="mailer[foo]"><option value="bar" >bar</option><option value="baz" selected="selected" >baz</option></select>')
+      @page.should render('<r:mailer:select name="foo"><r:option value="bar" selected="selected">bar</r:option><r:option value="baz">baz</r:option></r:mailer:select>').as('<select id="foo" size="1" name="mailer[foo]"><option value="bar" >bar</option><option value="baz" selected="selected" >baz</option></select>')
     end
     
     it "should add a 'required' hidden field when the required attribute is specified" do
-      pages(:mail_form).should render("<r:mailer:select name='foo' required='true'/>").as(%Q{<select size="1" class="required true" id="foo" name="mailer[foo]"></select><input type="hidden" name="mailer[required][foo]" value="true" />})
+      pages(:mail_form).should render("<r:mailer:select name='foo' required='true'/>").as(%Q{<select class="required true" id="foo" size="1" name="mailer[foo]"></select><input type="hidden" name="mailer[required][foo]" value="true" />})
     end
   end
   
@@ -272,7 +272,7 @@ describe "MailerTags" do
 
   describe "<r:mailer:textarea>" do
     it "should render a textarea tag" do
-      pages(:mail_form).should render('<r:mailer:textarea name="body" />').as('<textarea id="body" rows="5" cols="35" name="mailer[body]"></textarea>')
+      pages(:mail_form).should render('<r:mailer:textarea name="body" />').as('<textarea cols="35" id="body" rows="5" name="mailer[body]"></textarea>')
     end
 
     it "should raise an error if the name attribute is not specified" do
@@ -280,11 +280,11 @@ describe "MailerTags" do
     end
 
     it "should render its contents as the contents of the textarea tag" do
-      pages(:mail_form).should render('<r:mailer:textarea name="body">Hello, world!</r:mailer:textarea>').as('<textarea id="body" rows="5" cols="35" name="mailer[body]">Hello, world!</textarea>')
+      pages(:mail_form).should render('<r:mailer:textarea name="body">Hello, world!</r:mailer:textarea>').as('<textarea cols="35" id="body" rows="5" name="mailer[body]">Hello, world!</textarea>')
     end
     
     it "should add a 'required' hidden field when the required attribute is specified" do
-      pages(:mail_form).should render("<r:mailer:textarea name='body' required='true'/>").as(%Q{<textarea class="required true" id="body" rows="5" cols="35" name="mailer[body]"></textarea><input type="hidden" name="mailer[required][body]" value="true" />})
+      pages(:mail_form).should render("<r:mailer:textarea name='body' required='true'/>").as(%Q{<textarea class="required true" cols="35" id="body" rows="5" name="mailer[body]"></textarea><input type="hidden" name="mailer[required][body]" value="true" />})
     end
   end
   

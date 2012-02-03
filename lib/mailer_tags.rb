@@ -368,7 +368,7 @@ module MailerTags
       'tabindex' => nil,
       'title' => nil,
       'width' => nil}.merge(extras)
-    result = attrs.collect do |k,v|
+    result = attrs.sort.collect do |k,v|
       v = (tag.attr[k] || v)
       if k == 'class' && tag.attr['required'].present?
         v = [v, 'required', tag.attr['required']].compact.join(' ')
