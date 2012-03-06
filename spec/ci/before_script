@@ -1,0 +1,23 @@
+cd ~
+git clone git://github.com/radiant/radiant.git
+cd ~/radiant
+if [[ $RADIANT_VERSION != "master" ]]
+then
+  git checkout -b $RADIANT_VERSION $RADIANT_VERSION
+fi
+cp -r ~/builds/*/radiant-mailer-extension vendor/extensions/mailer
+gem install bundler --pre
+echo gemspec >> Gemfile
+bundle install
+
+case $DB in
+  "mysql" )
+    mysql -e 'create database radiant_test;'
+    cp spec/ci/database.mysql.yml config/database.yml;;
+  "postgres" )
+    psql -c 'create database radiant_test;' -U postgres
+    cp spec/ci/database.postgresql.yml config/database.yml;;
+esac
+
+bundle exec rake db:migrate
+bundle exec rake db:migrate:extensions

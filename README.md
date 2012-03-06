@@ -1,5 +1,7 @@
 # Mailer Extension for Radiant
 
+[![Build Status](https://secure.travis-ci.org/radiant/radiant-mailer-extension.png)](http://travis-ci.org/radiant/radiant-mailer-extension)
+
 The Mailer extension enables form mail on a page.
 
 ## Usage
