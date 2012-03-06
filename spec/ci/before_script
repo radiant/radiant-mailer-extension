@@ -5,6 +5,11 @@ if [[ $RADIANT_VERSION != "master" ]]
 then
   git checkout -b $RADIANT_VERSION $RADIANT_VERSION
 fi
+if [[ $RADIANT_VERSION == "0.9.1" ]]
+then
+  touch Gemfile
+  echo "source :rubygems" >> Gemfile
+fi
 cp -r ~/builds/*/radiant-mailer-extension vendor/extensions/mailer
 gem install bundler --pre
 echo gemspec >> Gemfile
