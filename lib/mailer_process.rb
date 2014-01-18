@@ -1,7 +1,9 @@
 module MailerProcess
   def self.included(base)
-    base.class_eval { 
-      alias_method_chain :process, :mailer 
+    base.class_eval {
+      unless self.instance_methods(false).include?(:process_without_mailer)
+        alias_method_chain :process, :mailer
+      end
       attr_accessor :last_mail
     }
   end
