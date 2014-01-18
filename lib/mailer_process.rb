@@ -1,7 +1,9 @@
 module MailerProcess
   def self.included(base)
-    base.class_eval { 
-      alias_method_chain :process, :mailer 
+    base.class_eval {
+      unless self.instance_methods(false).include?(:process_without_mailer)
+        alias_method_chain :process, :mailer
+      end
       attr_accessor :last_mail
     }
   end
@@ -11,7 +13,7 @@ module MailerProcess
     if Radiant::Config['mailer.post_to_page?'] && request.post? && request.parameters[:mailer]
       config, part_page = mailer_config_and_page
 
-      mail = Mail.new(part_page, config, request.parameters[:mailer])
+      mail = RadiantMailerExtension::Mail.new(part_page, config, request.parameters[:mailer])
       self.last_mail = part_page.last_mail = mail
       process_mail(mail, config)
 
