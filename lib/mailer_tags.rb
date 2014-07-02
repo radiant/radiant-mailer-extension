@@ -308,6 +308,18 @@ module MailerTags
     mail = tag.locals.page.last_mail || tag.globals.page.last_mail
     tag.expand if name && mail.data[name] && (eq.blank? || eq == mail.data[name])
   end
+  
+  desc %{
+    Renders the contained block unless a named datum was submitted via a mailer 
+    form.  Used in the 'email', 'email_html' and 'mailer' parts to generate 
+    the resulting email.
+  }
+  tag 'mailer:unless_value' do |tag|
+    name = tag.attr['name']
+    eq = tag.attr['equals']
+    mail = tag.locals.page.last_mail || tag.globals.page.last_mail
+    tag.expand unless name && mail.data[name] && (eq.blank? || eq == mail.data[name])
+  end
 
   def format_mailer_data(element, name)
     data = element[name]
