@@ -81,7 +81,7 @@ module RadiantMailerExtension
           end
         end
 
-        if @disallow_links.present?
+        unless @disallow_links.blank?
           pattern = /www|&amp;|http:|mailto:|bcc:|href|cc:|multipart|\[url|Content-Type:/i
           @disallow_links.each do |field|
             if @data[field] =~ pattern
@@ -91,7 +91,7 @@ module RadiantMailerExtension
           end
         end
 
-        if @leave_blank.present?
+        unless @leave_blank.blank?
           unless @data[@leave_blank] == ''
             errors[@leave_blank] = "must be left blank."
             @valid = false
