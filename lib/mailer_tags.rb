@@ -370,7 +370,7 @@ module MailerTags
       'width' => nil}.merge(extras)
     result = attrs.sort.collect do |k,v|
       v = (tag.attr[k] || v)
-      if k == 'class' && tag.attr['required'].present?
+      if k == 'class' && ! tag.attr['required'].blank?
         v = [v, 'required', tag.attr['required']].compact.join(' ')
       end
       next if v.blank?
