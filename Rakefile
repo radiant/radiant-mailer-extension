@@ -14,6 +14,7 @@ end
 require 'rake'
 require 'rdoc/task'
 require 'rake/testtask'
+require 'bundler/gem_tasks'
 
 rspec_base = File.expand_path(RADIANT_ROOT + '/vendor/plugins/rspec/lib')
 $LOAD_PATH.unshift(rspec_base) if File.exist?(rspec_base)
