@@ -118,6 +118,8 @@ The field names above are "name," "email," and "message." Note the quotation mar
 
 ### Spam blocking
 
+#### No Links
+
 You can specify which fields may not contain anything that looks like a link in the "mailer" part. For example:
 
     subject: From the website of Whatever
@@ -131,6 +133,7 @@ You can specify which fields may not contain anything that looks like a link in 
 
 The comments and questions fields would throw an error if the user or a spam bot entered the following phrases: "www", "&amp;", "http:", "mailto:", "bcc:", "href", "multipart", "[url", or "Content-Type:".
 
+#### Hidden field must be blank
 
 You can also include one field on your form that must be left blank. If anyone enters something in the field, the field throws an error. The tactic here is to hide the field from human readers, but to leave the field visible to spam bots. Here is how you would edit the "mailer" part to implement this:
 
@@ -143,6 +146,21 @@ You can also include one field on your form that must be left blank. If anyone e
 
 "your_field_name" is the name of the field you want to hide. It is up to you to hide the field when you construct your form. I would recommend against using a traditional hidden input field. Use style="display:none" instead.
 
+#### Blocked Words
+
+You can also add specific words to the mail config, which if present in any of the input fields, will throw an error.  This way if you get hit by a barage of say, 'imabot@spammer.net', you just add that term to the block list.  Here is how you would edit the "mailer" part to implement this:
+
+    subject: From the website of Whatever
+    from: noreply@mydomain.com
+    redirect_to: /contact/thank-you
+    max_filesize: 100000
+    recipients:
+      - one@one.com
+      - two@two.com
+    block_words:
+      - spammer
+      - badword
+      - imabot
 
 ### File attachments
 
@@ -204,7 +222,7 @@ Relative urls will almost certainly not work if the mailer fails validation. Sol
 
 Unless you set up the field validations in the "mailer" part, validation will be implemented via easily spoofable HTML attributes. Think of them of more like guidelines in that case.
 
-## History
+## Initial History
 
 Created by: M@ McCray - mattmccray.com
   Version: 0.2.1
@@ -218,3 +236,5 @@ Seriously restructured by: Nathaniel Talbott - terralien.com
   Version: 0.2
   Contact: nathaniel@terralien.com
   Work sponsored by: Ignite Social Media, http://ignitesocialmedia.com/
+
+## [Contributors](https://github.com/radiant/radiant-mailer-extension/graphs/contributors)

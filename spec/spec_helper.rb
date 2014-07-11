@@ -12,9 +12,11 @@ end
 require "#{RADIANT_ROOT}/spec/spec_helper"
 
 Dataset::Resolver.default << (File.dirname(__FILE__) + "/datasets")
-
-if File.directory?(File.dirname(__FILE__) + "/matchers")
-  Dir[File.dirname(__FILE__) + "/matchers/*.rb"].each {|file| require file }
+# Include any datasets from loaded extensions
+Radiant::Extension.descendants.each do |extension|
+  if File.directory?(extension.root + "/spec/datasets")
+    Dataset::Resolver.default << (extension.root + "/spec/datasets")
+  end
 end
 
 require 'action_controller'

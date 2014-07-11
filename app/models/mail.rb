@@ -1,11 +1,12 @@
 class Mail
-  attr_reader :page, :config, :data, :leave_blank, :disallow_links, :errors
+  attr_reader :page, :config, :data, :leave_blank, :disallow_links, :block_words, :errors
 
   def initialize(page, config, data)
     @page, @config, @data = page, config.with_indifferent_access, data
     @required = required_fields
     @leave_blank = leave_blank_field
     @disallow_links = disallow_link_fields
+    @block_words = block_words
     @errors = {}
   end
 
@@ -90,6 +91,18 @@ class Mail
           @valid = false
         end
       end
+      
+      unless @block_words.blank?
+        @data.each do |label,value|
+          @block_words.each do |word|
+            if value.include?(word.strip)
+              errors[label.titleize] = "is not valid"
+              @valid = false
+            end
+          end
+        end
+      end
+      
     end
     
     @valid
@@ -198,5 +211,9 @@ The following information was posted:
   
   def disallow_link_fields
     @config[:disallow_links] if @config.has_key?(:disallow_links)
+  end
+  
+  def block_words
+    config[:block_words] if @config.has_key?(:block_words)
   end
 end

@@ -146,7 +146,7 @@ describe Mail do
     @mail.errors['form'].should_not be_blank
   end
 
-  it "should be invalid when the recipients contains invalid email adresses" do
+  it "should be invalid when the recipients contains invalid email addresses" do
     @mail.config[:recipients] = ['sean AT radiant DOT com']
     @mail.should_not be_valid
     @mail.errors['form'].should_not be_blank
@@ -294,7 +294,16 @@ describe Mail do
       @mail.errors['comments'].should_not be_blank
       @mail.errors['comments'].should == 'must not contain the following text: "www", "&amp;amp;", "http:", "mailto:", "bcc:", "href", "multipart", "[url", or "Content-Type:"'
     end
-  end    
+  end   
+  
+  it "should be invalid when a field contains blocked words" do
+    ['spammer','badword','imabot'].each do |message|
+      @mail = Mail.new(@page, {:recipients => ['foo@bar.com'], :from => 'foo@baz.com', :block_words => ['spammer','badword','imabot']}, 'comments' => message)
+      @mail.should_not be_valid
+      @mail.errors['comments'.titleize].should_not be_blank
+      @mail.errors['comments'.titleize].should == 'is not valid'
+    end
+  end   
 
   it "should not send the mail if invalid" do
     @mail.should_receive(:valid?).and_return(false)
