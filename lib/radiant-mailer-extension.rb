@@ -1,5 +1,5 @@
 module RadiantMailerExtension
-  VERSION = '1.0.5'
+  VERSION = '1.0.6'
   SUMMARY = %q{Form mailing for Radiant CMS}
   DESCRIPTION = %q{Provides support for email forms and generic mailing functionality.}
   URL = "https://github.com/radiant/radiant-mailer-extension"
