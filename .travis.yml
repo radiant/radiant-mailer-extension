@@ -10,10 +10,10 @@ script: "./spec/ci/script"
 env:
   # - RADIANT_VERSION=0.9.1 DB=mysql
   # - RADIANT_VERSION=0.9.1 DB=postgres
-  - RADIANT_VERSION=1.0.0 DB=mysql
-  - RADIANT_VERSION=1.0.0 DB=postgres
-  - RADIANT_VERSION=1.1.0.alpha DB=mysql
-  - RADIANT_VERSION=1.1.0.alpha DB=postgres
+  - RADIANT_VERSION=1.0.1 DB=mysql
+  - RADIANT_VERSION=1.0.1 DB=postgres
+  - RADIANT_VERSION=1.1.4.DB=mysql
+  - RADIANT_VERSION=1.1.4 DB=postgres
 
 # matrix:
 #  exclude:
@@ -28,5 +28,6 @@ env:
 
 notifications:
   recipients:
-    - git@johnmuhl.com
-  irc: "irc.freenode.org#radiantcms"
+  #  - git@johnmuhl.com
+    - avonderluft@avlux.net
+  # irc: "irc.freenode.org#radiantcms"
